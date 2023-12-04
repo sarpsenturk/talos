@@ -1,0 +1,13 @@
+{
+  "name": "talos",
+  "version": "0.1.0",
+  "dependencies": [
+    "spdlog"
+  ],
+  "features": {
+    "tests": {
+      "description": "Build tests with googletest",
+      "dependencies": ["gtest"]
+    }
+  }
+}
