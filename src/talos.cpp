@@ -8,16 +8,17 @@ namespace talos
 {
     VMReturn TalosVM::execute_string(std::string_view string)
     {
-        std::cout << string << '\n';
-        return {.code = ReturnCode::Ok};
+        return VMSuccess{.output = std::string(string)};
     }
 
     VMReturn TalosVM::execute_file(std::string_view filename)
     {
         auto source_file = std::fstream{filename};
         if (source_file.fail()) {
-            return {.code = ReturnCode::FileNotFound};
+            return unexpected(VMError{});
         }
-        return {.code = ReturnCode::Ok};
+        std::stringstream sstream;
+        sstream << source_file.rdbuf();
+        return VMSuccess{.output = sstream.str()};
     }
 } // namespace talos

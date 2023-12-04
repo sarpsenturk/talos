@@ -6,9 +6,10 @@
 int run_file(talos::TalosVM& vm, const char* filename)
 {
     const auto result = vm.execute_file(filename);
-    if (result.has_error()) {
-        std::cerr << result.description << '\n';
-        return static_cast<int>(result.code);
+    if (!result) {
+        const auto& error = result.error();
+        std::cerr << error.description << '\n';
+        return static_cast<int>(error.code);
     }
     return 0;
 }
@@ -22,10 +23,12 @@ int run_repl(talos::TalosVM& vm)
             break;
         }
         const auto result = vm.execute_string(input);
-        if (result.has_error()) {
-            std::cerr << result.description << '\n';
-            return static_cast<int>(result.code);
+        if (!result) {
+            const auto& error = result.error();
+            std::cerr << error.description << '\n';
+            return static_cast<int>(error.code);
         }
+        std::cout << result->output << '\n';
     }
     return 0;
 }

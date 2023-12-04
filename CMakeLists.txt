@@ -9,8 +9,11 @@ endif ()
 
 project(talos VERSION 0.1.0 LANGUAGES CXX C)
 
+find_package(tl-expected CONFIG REQUIRED)
+
 add_library(talos_lib "")
 target_compile_features(talos_lib PUBLIC cxx_std_20)
+target_link_libraries(talos_lib PUBLIC tl::expected)
 target_include_directories(talos_lib PUBLIC src)
 
 add_executable(talos_exe src/main.cpp)

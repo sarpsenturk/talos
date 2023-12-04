@@ -2,7 +2,8 @@
   "name": "talos",
   "version": "0.1.0",
   "dependencies": [
-    "spdlog"
+    "spdlog",
+    "tl-expected"
   ],
   "features": {
     "tests": {
