@@ -15,7 +15,7 @@ namespace talos
     {
         auto source_file = std::fstream{filename};
         if (source_file.fail()) {
-            return unexpected(VMError{});
+            return unexpected(VMError{.code = ReturnCode::FileNotFound});
         }
         std::stringstream sstream;
         sstream << source_file.rdbuf();

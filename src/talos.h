@@ -13,7 +13,7 @@ namespace talos {
 
     struct VMError {
         ReturnCode code;
-        std::string description;
+        std::string description = return_code_desc(code);
     };
 
     using VMReturn = expected<VMSuccess, VMError>;
