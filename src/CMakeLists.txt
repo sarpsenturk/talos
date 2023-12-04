@@ -4,5 +4,6 @@ target_sources(
         talos.h
         return_code.h
         expected.h
+        source_location.h
         PRIVATE talos.cpp
 )
