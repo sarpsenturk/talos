@@ -5,5 +5,7 @@ target_sources(
         return_code.h
         expected.h
         source_location.h
-        PRIVATE talos.cpp
+        PRIVATE
+        talos.cpp
+        token.h token.cpp
 )
