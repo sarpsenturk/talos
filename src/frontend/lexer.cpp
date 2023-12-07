@@ -2,21 +2,50 @@
 
 #include <fmt/format.h>
 
+#include <cctype>
+#include <iterator>
+
 namespace talos
 {
     Lexer::Lexer(std::string_view source)
         : source_(source)
-        , position_(source_.begin())
+        , current_position_(source_.begin())
     {
     }
 
     LexerReturn Lexer::consume_token()
     {
         for (;;) {
+            const auto position = current_position_;
             const auto location = current_location_;
-            auto make_token = [&](TokenType type) { return Token{.type = type, .location = location}; };
-            auto make_error = [&](ReturnCode code, std::string message) { return unexpected(LexerError{code, location, std::move(message)}); };
-            auto invalid_char = [&](char character) { return make_error(ReturnCode::InvalidChar, fmt::format("Invalid character {}", character)); };
+            auto current_string = [&]() {
+                const auto start = std::distance(source_.begin(), position);
+                const auto end = std::distance(position, current_position_);
+                return source_.substr(start, end);
+            };
+            auto make_token = [&](TokenType type) {
+                return Token{
+                    .type = type,
+                    .location = location,
+                    .string = current_string(),
+                };
+            };
+            auto make_error = [&](ReturnCode code, std::string message) {
+                return unexpected(LexerError{
+                    code,
+                    location,
+                    std::move(message),
+                });
+            };
+            auto invalid_char = [&](char character) {
+                return make_error(ReturnCode::InvalidChar, fmt::format("Invalid character {}", character));
+            };
+            auto make_integer = [&]() {
+                while (std::isdigit(peek()) != 0) {
+                    consume_char();
+                }
+                return make_token(TokenType::Integer);
+            };
 
             const auto character = consume_char();
             switch (character) {
@@ -43,6 +72,9 @@ namespace talos
                     advance_line();
                     continue;
                 default:
+                    if (std::isdigit(character) != 0) {
+                        return make_integer();
+                    }
                     break;
             }
             return invalid_char(character);
@@ -55,7 +87,15 @@ namespace talos
             return '\0';
         }
         ++current_location_.column;
-        return *(position_++);
+        return *(current_position_++);
+    }
+
+    char Lexer::peek() const noexcept
+    {
+        if (is_eof()) {
+            return '\0';
+        }
+        return *current_position_;
     }
 
     void Lexer::advance_line() noexcept

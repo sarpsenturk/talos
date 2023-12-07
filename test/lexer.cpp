@@ -16,6 +16,12 @@ namespace
         EXPECT_EQ(result->location, location);
     }
 
+    void expect_token_string(const talos::LexerReturn& result, std::string_view string)
+    {
+        ASSERT_TRUE(result);
+        EXPECT_EQ(result->string, string);
+    }
+
     TEST(Lexer, Tokens)
     {
         constexpr const char* string = "+-/*()";
@@ -54,5 +60,14 @@ namespace
         const auto result = lexer.consume_token();
         expect_token_type(result, talos::TokenType::Eof);
         expect_token_location(result, {.line = 1, .column = 1});
+    }
+
+    TEST(Lexer, Integer)
+    {
+        constexpr const char* string = "1234567890";
+        auto lexer = talos::Lexer{string};
+        const auto result = lexer.consume_token();
+        expect_token_type(result, talos::TokenType::Integer);
+        expect_token_string(result, "1234567890");
     }
 } // namespace

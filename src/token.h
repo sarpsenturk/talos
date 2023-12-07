@@ -3,6 +3,7 @@
 #include "source_location.h"
 
 #include <string>
+#include <string_view>
 
 namespace talos
 {
@@ -14,12 +15,14 @@ namespace talos
         Slash,
         Star,
         LeftParen,
-        RightParen
+        RightParen,
+        Integer
     };
 
     struct Token {
         TokenType type = TokenType::Invalid;
         SourceLocation location;
+        std::string_view string;
     };
 
     constexpr auto format_as(TokenType token_type)
@@ -41,6 +44,8 @@ namespace talos
                 return "Left Paren";
             case TokenType::RightParen:
                 return "Right Paren";
+            case TokenType::Integer:
+                return "Integer";
         }
     }
 }

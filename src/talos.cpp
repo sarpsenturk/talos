@@ -22,9 +22,10 @@ namespace talos
                 return unexpected(VMError{error.code});
             }
             const auto& token = *result;
-            SPDLOG_INFO("Token{{ type: {}, location: {}:{} }}",
+            SPDLOG_INFO("Token{{ type: {}, location: {}:{}, string: '{}' }}",
                         token.type,
-                        token.location.line, token.location.column);
+                        token.location.line, token.location.column,
+                        token.string);
             if (token.type == TokenType::Eof) {
                 break;
             }
