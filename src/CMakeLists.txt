@@ -8,4 +8,5 @@ target_sources(
         PRIVATE
         talos.cpp
         token.h token.cpp
+        frontend/lexer.h frontend/lexer.cpp
 )

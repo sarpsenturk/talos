@@ -10,3 +10,4 @@ function(talos_add_test name)
 endfunction()
 
 talos_add_test(talos)
+talos_add_test(lexer)
