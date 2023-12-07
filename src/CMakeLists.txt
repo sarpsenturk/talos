@@ -9,4 +9,5 @@ target_sources(
         talos.cpp
         token.h token.cpp
         frontend/lexer.h frontend/lexer.cpp
+        frontend/ast.h frontend/ast.cpp
 )
