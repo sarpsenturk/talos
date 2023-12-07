@@ -1,6 +1,7 @@
 #include "talos.h"
 
 #include "frontend/lexer.h"
+#include "frontend/parser.h"
 
 #include <spdlog/spdlog.h>
 
@@ -12,24 +13,13 @@ namespace talos
     VMReturn TalosVM::execute_string(std::string_view string)
     {
         auto lexer = Lexer{string};
-        for (;;) {
-            const auto result = lexer.consume_token();
-            if (!result) {
-                const auto& error = result.error();
-                SPDLOG_ERROR("Lexer error ({}:{}): {}",
-                             error.location.line, error.location.column,
-                             error.message);
-                return unexpected(VMError{error.code});
-            }
-            const auto& token = *result;
-            SPDLOG_INFO("Token{{ type: {}, location: {}:{}, string: '{}' }}",
-                        token.type,
-                        token.location.line, token.location.column,
-                        token.string);
-            if (token.type == TokenType::Eof) {
-                break;
-            }
+        auto parser = Parser{&lexer};
+        auto result = parser.parse();
+        if (!result) {
+            auto& error = result.error();
+            return unexpected(VMError{.code = error.code, .description = std::move(error.message)});
         }
+        const auto& expr = *result;
         return VMSuccess{.output = ""};
     }
 

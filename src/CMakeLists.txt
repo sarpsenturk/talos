@@ -10,4 +10,5 @@ target_sources(
         token.h token.cpp
         frontend/lexer.h frontend/lexer.cpp
         frontend/ast.h frontend/ast.cpp
+        frontend/parser.h frontend/parser.cpp
 )
