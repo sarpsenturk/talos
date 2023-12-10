@@ -15,12 +15,12 @@ namespace talos
         return expression();
     }
 
-    ParserResult Parser::expression()
+    ExprResult Parser::expression()
     {
         return additive_expr();
     }
 
-    ParserResult Parser::additive_expr()
+    ExprResult Parser::additive_expr()
     {
         auto expr = factor_expr();
         if (!expr) {
@@ -37,7 +37,7 @@ namespace talos
         return expr;
     }
 
-    ParserResult Parser::factor_expr()
+    ExprResult Parser::factor_expr()
     {
         auto expr = literal_expr();
         if (!expr) {
@@ -54,7 +54,7 @@ namespace talos
         return expr;
     }
 
-    ParserResult Parser::literal_expr()
+    ExprResult Parser::literal_expr()
     {
         if (expect_and_consume(TokenType::Integer)) {
             return std::make_unique<IntLiteralExpr>(current_token_);

@@ -15,6 +15,7 @@ namespace talos
     };
 
     using ParserResult = expected<ExprPtr, ParserError>;
+    using ExprResult = expected<ExprPtr, ParserError>;
 
     class Parser
     {
@@ -24,10 +25,10 @@ namespace talos
         ParserResult parse();
 
     private:
-        ParserResult expression();
-        ParserResult additive_expr();
-        ParserResult factor_expr();
-        ParserResult literal_expr();
+        ExprResult expression();
+        ExprResult additive_expr();
+        ExprResult factor_expr();
+        ExprResult literal_expr();
 
         void consume_token();
         bool expect_and_consume(std::span<const TokenType> expected);

@@ -6,43 +6,51 @@
 
 namespace talos
 {
+    class ASTNode;
     class Expr;
     class BinaryExpr;
     class ParenExpr;
     class IntLiteralExpr;
 
+    using ASTNodePtr = std::unique_ptr<ASTNode>;
     using ExprPtr = std::unique_ptr<Expr>;
 
-    class ExprVisitor
+    class ASTVisitor
     {
     public:
-        ExprVisitor() = default;
-        virtual ~ExprVisitor() = default;
+        ASTVisitor() = default;
+        virtual ~ASTVisitor() = default;
 
         virtual void visit(const BinaryExpr& expr) = 0;
         virtual void visit(const ParenExpr& expr) = 0;
         virtual void visit(const IntLiteralExpr& expr) = 0;
 
     protected:
-        ExprVisitor(const ExprVisitor&) = default;
-        ExprVisitor(ExprVisitor&&) noexcept = default;
-        ExprVisitor& operator=(const ExprVisitor&) = default;
-        ExprVisitor& operator=(ExprVisitor&&) noexcept = default;
+        ASTVisitor(const ASTVisitor&) = default;
+        ASTVisitor(ASTVisitor&&) noexcept = default;
+        ASTVisitor& operator=(const ASTVisitor&) = default;
+        ASTVisitor& operator=(ASTVisitor&&) noexcept = default;
     };
 
-    class Expr
+    class ASTNode
+    {
+    public:
+        ASTNode() = default;
+        virtual ~ASTNode() = default;
+
+        virtual void visit(ASTVisitor&) = 0;
+
+    protected:
+        ASTNode(const ASTNode&) = default;
+        ASTNode(ASTNode&&) noexcept = default;
+        ASTNode& operator=(const ASTNode&) = default;
+        ASTNode& operator=(ASTNode&&) noexcept = default;
+    };
+
+    class Expr : public ASTNode
     {
     public:
         Expr() = default;
-        virtual ~Expr() = default;
-
-        virtual void visit(ExprVisitor&) = 0;
-
-    protected:
-        Expr(const Expr&) = default;
-        Expr(Expr&&) noexcept = default;
-        Expr& operator=(const Expr&) = default;
-        Expr& operator=(Expr&&) noexcept = default;
     };
 
     class BinaryExpr : public Expr
@@ -54,7 +62,7 @@ namespace talos
         [[nodiscard]] Token op() const noexcept { return op_; }
         [[nodiscard]] const Expr* rhs() const noexcept { return rhs_.get(); }
 
-        void visit(ExprVisitor& visitor) override { visitor.visit(*this); }
+        void visit(ASTVisitor& visitor) override { visitor.visit(*this); }
 
     private:
         ExprPtr lhs_;
@@ -69,7 +77,7 @@ namespace talos
 
         [[nodiscard]] const Expr* expr() const noexcept { return expr_.get(); }
 
-        void visit(ExprVisitor& visitor) override { visitor.visit(*this); }
+        void visit(ASTVisitor& visitor) override { visitor.visit(*this); }
 
     private:
         ExprPtr expr_;
@@ -82,7 +90,7 @@ namespace talos
 
         [[nodiscard]] Token int_token() const noexcept { return int_token_; }
 
-        void visit(ExprVisitor& visitor) override { visitor.visit(*this); }
+        void visit(ASTVisitor& visitor) override { visitor.visit(*this); }
 
     private:
         Token int_token_;
