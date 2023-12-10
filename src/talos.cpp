@@ -1,9 +1,8 @@
 #include "talos.h"
 
+#include "frontend/ast_printer.h"
 #include "frontend/lexer.h"
 #include "frontend/parser.h"
-
-#include <spdlog/spdlog.h>
 
 #include <fstream>
 #include <sstream>
@@ -19,7 +18,8 @@ namespace talos
             auto& error = result.error();
             return unexpected(VMError{.code = error.code, .description = std::move(error.message)});
         }
-        const auto& expr = *result;
+        auto ast_printer = ASTPrinter{};
+        ast_printer.print(**result);
         return VMSuccess{.output = ""};
     }
 

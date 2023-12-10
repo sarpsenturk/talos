@@ -11,4 +11,5 @@ target_sources(
         frontend/lexer.h frontend/lexer.cpp
         frontend/ast.h frontend/ast.cpp
         frontend/parser.h frontend/parser.cpp
+        frontend/ast_printer.h frontend/ast_printer.cpp
 )
