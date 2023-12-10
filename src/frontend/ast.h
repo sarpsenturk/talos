@@ -38,7 +38,7 @@ namespace talos
         ASTNode() = default;
         virtual ~ASTNode() = default;
 
-        virtual void visit(ASTVisitor&) = 0;
+        virtual void accept(ASTVisitor&) const = 0;
 
     protected:
         ASTNode(const ASTNode&) = default;
@@ -62,7 +62,7 @@ namespace talos
         [[nodiscard]] Token op() const noexcept { return op_; }
         [[nodiscard]] const Expr* rhs() const noexcept { return rhs_.get(); }
 
-        void visit(ASTVisitor& visitor) override { visitor.visit(*this); }
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
         ExprPtr lhs_;
@@ -77,7 +77,7 @@ namespace talos
 
         [[nodiscard]] const Expr* expr() const noexcept { return expr_.get(); }
 
-        void visit(ASTVisitor& visitor) override { visitor.visit(*this); }
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
         ExprPtr expr_;
@@ -90,7 +90,7 @@ namespace talos
 
         [[nodiscard]] Token int_token() const noexcept { return int_token_; }
 
-        void visit(ASTVisitor& visitor) override { visitor.visit(*this); }
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
         Token int_token_;
