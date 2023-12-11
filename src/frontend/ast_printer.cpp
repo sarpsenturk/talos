@@ -1,6 +1,7 @@
 #include "ast_printer.h"
 
 #include <fmt/format.h>
+
 #include <string_view>
 
 namespace talos
@@ -46,5 +47,23 @@ namespace talos
     void ASTPrinter::visit(const IntLiteralExpr& expr)
     {
         print_indented(level_, "IntLiteral {}", expr.int_token().string);
+    }
+
+    void ASTPrinter::visit(const ExprStatement& stmt)
+    {
+        print_indented(level_, "ExprStatement");
+        ++level_;
+        stmt.expr()->accept(*this);
+        --level_;
+    }
+
+    void ASTPrinter::visit(const ProgramNode& program)
+    {
+        print_indented(level_, "Program");
+        ++level_;
+        for (const auto& statement : program.statements()) {
+            statement->accept(*this);
+        }
+        --level_;
     }
 } // namespace talos

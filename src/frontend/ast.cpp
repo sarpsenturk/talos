@@ -24,4 +24,14 @@ namespace talos
         : int_token_(int_token)
     {
     }
+
+    ExprStatement::ExprStatement(ExprPtr expr)
+        : expr_(std::move(expr))
+    {
+    }
+
+    ProgramNode::ProgramNode(std::vector<StatementPtr> statements)
+        : statements_(std::move(statements))
+    {
+    }
 } // namespace talos

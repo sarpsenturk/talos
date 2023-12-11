@@ -3,6 +3,8 @@
 #include "token.h"
 
 #include <memory>
+#include <span>
+#include <vector>
 
 namespace talos
 {
@@ -12,9 +14,13 @@ namespace talos
     class ParenExpr;
     class UnaryExpr;
     class IntLiteralExpr;
+    class Statement;
+    class ExprStatement;
+    class ProgramNode;
 
     using ASTNodePtr = std::unique_ptr<ASTNode>;
     using ExprPtr = std::unique_ptr<Expr>;
+    using StatementPtr = std::unique_ptr<Statement>;
 
     class ASTVisitor
     {
@@ -26,6 +32,8 @@ namespace talos
         virtual void visit(const UnaryExpr& expr) = 0;
         virtual void visit(const ParenExpr& expr) = 0;
         virtual void visit(const IntLiteralExpr& expr) = 0;
+        virtual void visit(const ExprStatement& stmt) = 0;
+        virtual void visit(const ProgramNode& program) = 0;
 
     protected:
         ASTVisitor(const ASTVisitor&) = default;
@@ -111,5 +119,35 @@ namespace talos
 
     private:
         Token int_token_;
+    };
+
+    class Statement : public ASTNode
+    {
+    };
+
+    class ExprStatement : public Statement
+    {
+    public:
+        explicit ExprStatement(ExprPtr expr);
+
+        [[nodiscard]] auto* expr() const noexcept { return expr_.get(); }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        ExprPtr expr_;
+    };
+
+    class ProgramNode : public ASTNode
+    {
+    public:
+        explicit ProgramNode(std::vector<StatementPtr> statements);
+
+        [[nodiscard]] auto statements() const noexcept { return std::span{statements_}; }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        std::vector<StatementPtr> statements_;
     };
 } // namespace talos
