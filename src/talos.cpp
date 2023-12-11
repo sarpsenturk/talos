@@ -24,7 +24,7 @@ namespace talos
             });
         }
         auto ast_printer = ASTPrinter{};
-        ast_printer.print(**result);
+        ast_printer.print(*result);
         return VMSuccess{.output = ""};
     }
 

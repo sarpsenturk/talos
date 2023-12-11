@@ -12,7 +12,32 @@ namespace talos
     ParserResult Parser::parse()
     {
         consume_token();
-        return expression();
+        std::vector<StatementPtr> statements;
+        while (!is_eof()) {
+            auto stmt = statement();
+            if (!stmt) {
+                return unexpected(stmt.error());
+            }
+            statements.push_back(std::move(*stmt));
+        }
+        return ProgramNode{std::move(statements)};
+    }
+
+    StmtResult Parser::statement()
+    {
+        return expr_statement();
+    }
+
+    StmtResult Parser::expr_statement()
+    {
+        auto expr = expression();
+        if (!expr) {
+            return unexpected(expr.error());
+        }
+        if (!expect_and_consume(TokenType::Semicolon)) {
+            return syntax_error("Expected ';' after statement");
+        }
+        return std::make_unique<ExprStatement>(std::move(*expr));
     }
 
     ExprResult Parser::expression()
@@ -82,6 +107,11 @@ namespace talos
         return syntax_error("Expected expression");
     }
 
+    bool Parser::is_eof() const noexcept
+    {
+        return next_token_.type == TokenType::Eof;
+    }
+
     void Parser::consume_token()
     {
         // TODO: We don't check for lex errors here
@@ -104,7 +134,7 @@ namespace talos
         return expect_and_consume({{expected}});
     }
 
-    ParserResult Parser::syntax_error(std::string message) const
+    unexpected<ParserError> Parser::syntax_error(std::string message) const
     {
         return unexpected(ParserError{
             .message = std::move(message),
