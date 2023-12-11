@@ -63,6 +63,8 @@ namespace talos
                     return make_token(TokenType::LeftParen);
                 case ')':
                     return make_token(TokenType::RightParen);
+                case ';':
+                    return make_token(TokenType::Semicolon);
                 case ' ':
                     continue;
                 case '\t':
