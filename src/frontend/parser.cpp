@@ -62,11 +62,11 @@ namespace talos
         if (expect_and_consume(TokenType::LeftParen)) {
             auto expr = expression();
             if (!expect_and_consume(TokenType::RightParen)) {
-                return unexpected(ParserError{.message = "Expected ')' after expression"});
+                return syntax_error("Expected ')' after expression");
             }
             return std::make_unique<ParenExpr>(std::move(*expr));
         }
-        return unexpected(ParserError{.message = "Expected expression"});
+        return syntax_error("Expected expression");
     }
 
     void Parser::consume_token()
@@ -87,5 +87,13 @@ namespace talos
     bool Parser::expect_and_consume(TokenType expected)
     {
         return expect_and_consume({{expected}});
+    }
+
+    ParserResult Parser::syntax_error(std::string message) const
+    {
+        return unexpected(ParserError{
+            .message = std::move(message),
+            .location = current_token_.location,
+        });
     }
 } // namespace talos

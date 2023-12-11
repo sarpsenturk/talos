@@ -12,6 +12,7 @@ namespace talos
     struct ParserError {
         ReturnCode code = ReturnCode::SyntaxError;
         std::string message;
+        SourceLocation location;
     };
 
     using ParserResult = expected<ExprPtr, ParserError>;
@@ -33,6 +34,7 @@ namespace talos
         void consume_token();
         bool expect_and_consume(std::span<const TokenType> expected);
         bool expect_and_consume(TokenType expected);
+        ParserResult syntax_error(std::string message) const;
 
         Lexer* lexer_;
         Token current_token_;

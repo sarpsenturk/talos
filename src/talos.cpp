@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <fmt/format.h>
+
 namespace talos
 {
     VMReturn TalosVM::execute_string(std::string_view string)
@@ -15,8 +17,11 @@ namespace talos
         auto parser = Parser{&lexer};
         auto result = parser.parse();
         if (!result) {
-            auto& error = result.error();
-            return unexpected(VMError{.code = error.code, .description = std::move(error.message)});
+            auto& parser_error = result.error();
+            return unexpected(VMError{
+                .code = parser_error.code,
+                .description = fmt::format("Syntax Error ({}): {}", parser_error.location, parser_error.message),
+            });
         }
         auto ast_printer = ASTPrinter{};
         ast_printer.print(**result);

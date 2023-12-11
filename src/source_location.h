@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fmt/format.h>
+
 #include <compare>
 #include <cstdint>
 
@@ -24,4 +26,9 @@ namespace talos {
 
         constexpr friend bool operator==(const SourceLocation&, const SourceLocation&) = default;
     };
+
+    constexpr auto format_as(const SourceLocation& location)
+    {
+        return fmt::format("{}:{}", location.line, location.column);
+    }
 }
