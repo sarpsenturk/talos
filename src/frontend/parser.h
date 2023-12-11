@@ -29,6 +29,7 @@ namespace talos
         ExprResult expression();
         ExprResult additive_expr();
         ExprResult factor_expr();
+        ExprResult unary_expr();
         ExprResult literal_expr();
 
         void consume_token();

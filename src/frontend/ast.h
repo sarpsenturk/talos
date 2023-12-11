@@ -10,6 +10,7 @@ namespace talos
     class Expr;
     class BinaryExpr;
     class ParenExpr;
+    class UnaryExpr;
     class IntLiteralExpr;
 
     using ASTNodePtr = std::unique_ptr<ASTNode>;
@@ -22,6 +23,7 @@ namespace talos
         virtual ~ASTVisitor() = default;
 
         virtual void visit(const BinaryExpr& expr) = 0;
+        virtual void visit(const UnaryExpr& expr) = 0;
         virtual void visit(const ParenExpr& expr) = 0;
         virtual void visit(const IntLiteralExpr& expr) = 0;
 
@@ -68,6 +70,21 @@ namespace talos
         ExprPtr lhs_;
         Token op_;
         ExprPtr rhs_;
+    };
+
+    class UnaryExpr : public Expr
+    {
+    public:
+        UnaryExpr(Token unary_op, ExprPtr expr);
+
+        [[nodiscard]] Token unary_op() const noexcept { return unary_op_; }
+        [[nodiscard]] const Expr* expr() const noexcept { return expr_.get(); }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        Token unary_op_;
+        ExprPtr expr_;
     };
 
     class ParenExpr : public Expr

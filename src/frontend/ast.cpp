@@ -9,6 +9,12 @@ namespace talos
     {
     }
 
+    UnaryExpr::UnaryExpr(Token unary_op, ExprPtr expr)
+        : unary_op_(unary_op)
+        , expr_(std::move(expr))
+    {
+    }
+
     ParenExpr::ParenExpr(ExprPtr expr)
         : expr_(std::move(expr))
     {

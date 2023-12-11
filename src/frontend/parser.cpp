@@ -39,19 +39,32 @@ namespace talos
 
     ExprResult Parser::factor_expr()
     {
-        auto expr = literal_expr();
+        auto expr = unary_expr();
         if (!expr) {
             return expr;
         }
         while (expect_and_consume({{TokenType::Star, TokenType::Slash}})) {
             auto op = current_token_;
-            auto rhs = literal_expr();
+            auto rhs = unary_expr();
             if (!rhs) {
                 return rhs;
             }
             expr = std::make_unique<BinaryExpr>(std::move(*expr), op, std::move(*rhs));
         }
         return expr;
+    }
+
+    ExprResult Parser::unary_expr()
+    {
+        if (expect_and_consume({{TokenType::Minus}})) {
+            auto unary_op = current_token_;
+            auto expr = unary_expr();
+            if (expr) {
+                return std::make_unique<UnaryExpr>(unary_op, std::move(*expr));
+            }
+            return expr;
+        }
+        return literal_expr();
     }
 
     ExprResult Parser::literal_expr()
@@ -71,6 +84,8 @@ namespace talos
 
     void Parser::consume_token()
     {
+        // TODO: We don't check for lex errors here
+        //  We should probably do that.
         current_token_ = next_token_;
         next_token_ = lexer_->consume_token().value();
     }

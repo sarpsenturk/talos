@@ -11,6 +11,11 @@ namespace talos
 
     private:
         void visit(const BinaryExpr& expr) override;
+
+    public:
+        void visit(const UnaryExpr& expr) override;
+
+    private:
         void visit(const ParenExpr& expr) override;
         void visit(const IntLiteralExpr& expr) override;
 

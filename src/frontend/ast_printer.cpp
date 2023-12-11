@@ -27,6 +27,14 @@ namespace talos
         --level_;
     }
 
+    void ASTPrinter::visit(const UnaryExpr& expr)
+    {
+        print_indented(level_, "UnaryExpr");
+        ++level_;
+        print_indented(level_, "UnaryOp {}", expr.unary_op().type);
+        expr.expr()->accept(*this);
+    }
+
     void ASTPrinter::visit(const ParenExpr& expr)
     {
         print_indented(level_, "ParenExpr");
