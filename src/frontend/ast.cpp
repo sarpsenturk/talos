@@ -25,6 +25,11 @@ namespace talos
     {
     }
 
+    IdentifierExpr::IdentifierExpr(Token identifier)
+        : identifier_(identifier)
+    {
+    }
+
     ExprStatement::ExprStatement(ExprPtr expr)
         : expr_(std::move(expr))
     {

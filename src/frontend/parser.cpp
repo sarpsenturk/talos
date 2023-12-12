@@ -202,6 +202,9 @@ namespace talos
         if (expect_and_consume(TokenType::Integer)) {
             return std::make_unique<IntLiteralExpr>(current_token_);
         }
+        if (expect_and_consume(TokenType::Identifier)) {
+            return std::make_unique<IdentifierExpr>(current_token_);
+        }
         if (expect_and_consume(TokenType::LeftParen)) {
             auto expr = expression();
             if (!expect_and_consume(TokenType::RightParen)) {
