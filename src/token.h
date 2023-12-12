@@ -18,6 +18,8 @@ namespace talos
         RightParen,
         Integer,
         Semicolon,
+        LeftBrace,
+        RightBrace,
 
         // Keywords
         Fun,
@@ -54,6 +56,10 @@ namespace talos
                 return "Integer";
             case TokenType::Semicolon:
                 return "Semicolon";
+            case TokenType::LeftBrace:
+                return "Left Brace";
+            case TokenType::RightBrace:
+                return "Right Brace";
             case TokenType::Fun:
                 return "Fun";
             case TokenType::Return:
