@@ -25,7 +25,60 @@ namespace talos
 
     StmtResult Parser::statement()
     {
+        if (expect_and_consume(TokenType::Fun)) {
+            return fun_statement();
+        }
+        if (expect_and_consume(TokenType::Return)) {
+            return return_statement();
+        }
         return expr_statement();
+    }
+
+    StmtResult Parser::fun_statement()
+    {
+        if (!expect_and_consume(TokenType::Identifier)) {
+            return syntax_error("Expected function identifier after fun");
+        }
+        auto identifier = current_token_;
+
+        if (!expect_and_consume(TokenType::LeftParen)) {
+            return syntax_error("Expected '(' after function name");
+        }
+        // TODO: Function parameters
+        if (!expect_and_consume(TokenType::RightParen)) {
+            return syntax_error("Expected ')' after parameter list");
+        }
+
+        StatementList statements;
+        if (!expect_and_consume(TokenType::LeftBrace)) {
+            return syntax_error("Expected '{' to begin function block");
+        }
+
+        while (!expect_and_consume(TokenType::RightBrace)) {
+            if (is_eof()) {
+                return syntax_error("Unexpected EOF. Expected '}' to end function block");
+            }
+            auto stmt = statement();
+            if (!stmt) {
+                return stmt;
+            }
+            statements.push_back(std::move(*stmt));
+        }
+        return std::make_unique<FunStatement>(identifier, std::move(statements));
+    }
+
+    StmtResult Parser::return_statement()
+    {
+        auto return_value = expression();
+        if (!return_value) {
+            return unexpected(return_value.error());
+        }
+
+        if (!expect_and_consume(TokenType::Semicolon)) {
+            return syntax_error("Expected ';' after return statement");
+        }
+
+        return std::make_unique<ReturnStatement>(std::move(*return_value));
     }
 
     StmtResult Parser::expr_statement()

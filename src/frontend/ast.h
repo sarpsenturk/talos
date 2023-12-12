@@ -16,11 +16,14 @@ namespace talos
     class IntLiteralExpr;
     class Statement;
     class ExprStatement;
+    class FunStatement;
+    class ReturnStatement;
     class ProgramNode;
 
     using ASTNodePtr = std::unique_ptr<ASTNode>;
     using ExprPtr = std::unique_ptr<Expr>;
     using StatementPtr = std::unique_ptr<Statement>;
+    using StatementList = std::vector<StatementPtr>;
 
     class ASTVisitor
     {
@@ -33,6 +36,8 @@ namespace talos
         virtual void visit(const ParenExpr& expr) = 0;
         virtual void visit(const IntLiteralExpr& expr) = 0;
         virtual void visit(const ExprStatement& stmt) = 0;
+        virtual void visit(const FunStatement& stmt) = 0;
+        virtual void visit(const ReturnStatement& stmt) = 0;
         virtual void visit(const ProgramNode& program) = 0;
 
     protected:
@@ -136,6 +141,34 @@ namespace talos
 
     private:
         ExprPtr expr_;
+    };
+
+    class FunStatement : public Statement
+    {
+    public:
+        FunStatement(Token identifier, StatementList statements);
+
+        [[nodiscard]] auto identifier() const noexcept { return identifier_; }
+        [[nodiscard]] auto statements() const noexcept { return std::span{statements_}; }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        Token identifier_;
+        StatementList statements_;
+    };
+
+    class ReturnStatement : public Statement
+    {
+    public:
+        explicit ReturnStatement(ExprPtr return_value);
+
+        [[nodiscard]] auto* return_value() const noexcept { return return_value_.get(); }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        ExprPtr return_value_;
     };
 
     class ProgramNode : public ASTNode

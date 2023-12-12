@@ -30,6 +30,17 @@ namespace talos
     {
     }
 
+    FunStatement::FunStatement(Token identifier, StatementList statements)
+        : identifier_(identifier)
+        , statements_(std::move(statements))
+    {
+    }
+
+    ReturnStatement::ReturnStatement(ExprPtr return_value)
+        : return_value_(std::move(return_value))
+    {
+    }
+
     ProgramNode::ProgramNode(std::vector<StatementPtr> statements)
         : statements_(std::move(statements))
     {

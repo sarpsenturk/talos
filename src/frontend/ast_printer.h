@@ -14,9 +14,9 @@ namespace talos
         void visit(const UnaryExpr& expr) override;
         void visit(const ParenExpr& expr) override;
         void visit(const IntLiteralExpr& expr) override;
-
-    public:
         void visit(const ExprStatement& stmt) override;
+        void visit(const FunStatement& stmt) override;
+        void visit(const ReturnStatement& stmt) override;
         void visit(const ProgramNode& program) override;
 
     private:

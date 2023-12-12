@@ -57,6 +57,24 @@ namespace talos
         --level_;
     }
 
+    void ASTPrinter::visit(const FunStatement& stmt)
+    {
+        print_indented(level_, "FunStatement: {{ identifier: {} }}", stmt.identifier().string);
+        ++level_;
+        for (const auto& statement : stmt.statements()) {
+            statement->accept(*this);
+        }
+        --level_;
+    }
+
+    void ASTPrinter::visit(const ReturnStatement& stmt)
+    {
+        print_indented(level_, "ReturnStatement");
+        ++level_;
+        stmt.return_value()->accept(*this);
+        --level_;
+    }
+
     void ASTPrinter::visit(const ProgramNode& program)
     {
         print_indented(level_, "Program");
