@@ -20,6 +20,7 @@ namespace talos
         Semicolon,
         LeftBrace,
         RightBrace,
+        Equal,
 
         // Keywords
         Fun,
@@ -62,6 +63,8 @@ namespace talos
                 return "Left Brace";
             case TokenType::RightBrace:
                 return "Right Brace";
+            case TokenType::Equal:
+                return "Equal";
             case TokenType::Fun:
                 return "Fun";
             case TokenType::Return:
