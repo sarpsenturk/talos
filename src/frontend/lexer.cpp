@@ -7,6 +7,34 @@
 
 namespace talos
 {
+    namespace
+    {
+        constexpr bool isdigit(char c)
+        {
+            return std::isdigit(c) != 0;
+        }
+
+        constexpr bool isalpha(char c)
+        {
+            return std::isalpha(c) != 0;
+        }
+
+        constexpr bool isalnum(char c)
+        {
+            return std::isalnum(c) != 0;
+        }
+
+        constexpr bool is_identifier_start(char c)
+        {
+            return isalpha(c) || c == '_';
+        }
+
+        constexpr bool is_identifier_char(char c)
+        {
+            return isalnum(c) || c == '_';
+        }
+    } // namespace
+
     Lexer::Lexer(std::string_view source)
         : source_(source)
         , current_position_(source_.begin())
@@ -41,13 +69,13 @@ namespace talos
                 return make_error(ReturnCode::InvalidChar, fmt::format("Invalid character {}", character));
             };
             auto make_integer = [&]() {
-                while (std::isdigit(peek()) != 0) {
+                while (isdigit(peek())) {
                     consume_char();
                 }
                 return make_token(TokenType::Integer);
             };
             auto make_keyword_or_identifier = [&]() {
-                while (std::isalpha(peek()) != 0) {
+                while (is_identifier_char(peek())) {
                     consume_char();
                 }
 
@@ -92,10 +120,10 @@ namespace talos
                     advance_line();
                     continue;
                 default:
-                    if (std::isdigit(character) != 0) {
+                    if (isdigit(character)) {
                         return make_integer();
                     }
-                    if (std::isalpha(character) != 0) {
+                    if (is_identifier_start(character)) {
                         return make_keyword_or_identifier();
                     }
                     break;
