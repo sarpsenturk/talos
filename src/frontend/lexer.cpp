@@ -4,6 +4,7 @@
 
 #include <cctype>
 #include <iterator>
+#include <unordered_map>
 
 namespace talos
 {
@@ -33,6 +34,14 @@ namespace talos
         {
             return isalnum(c) || c == '_';
         }
+
+        using namespace std::string_view_literals;
+        static const auto keywords = std::unordered_map{
+            std::make_pair("fun"sv, TokenType::Fun),
+            std::make_pair("return"sv, TokenType::Return),
+            std::make_pair("var"sv, TokenType::Var),
+            std::make_pair("const"sv, TokenType::Const),
+        };
     } // namespace
 
     Lexer::Lexer(std::string_view source)
@@ -79,12 +88,8 @@ namespace talos
                     consume_char();
                 }
 
-                auto string = current_string();
-                if (string == "fun") {
-                    return make_token(TokenType::Fun);
-                }
-                if (string == "return") {
-                    return make_token(TokenType::Return);
+                if (auto iter = keywords.find(current_string()); iter != keywords.end()) {
+                    return make_token(iter->second);
                 }
                 return make_token(TokenType::Identifier);
             };

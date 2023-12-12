@@ -24,7 +24,9 @@ namespace talos
         // Keywords
         Fun,
         Return,
-        Identifier
+        Identifier,
+        Var,
+        Const
     };
 
     struct Token {
@@ -66,6 +68,10 @@ namespace talos
                 return "Return";
             case TokenType::Identifier:
                 return "Identifier";
+            case TokenType::Var:
+                return "Var";
+            case TokenType::Const:
+                return "Const";
         }
     }
 }

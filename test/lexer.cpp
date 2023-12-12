@@ -77,11 +77,13 @@ namespace
 
     TEST(Lexer, Keywords)
     {
-        constexpr const char* string = "fun return";
+        constexpr const char* string = "fun return var const";
         auto lexer = talos::Lexer{string};
         using enum talos::TokenType;
         expect_token_type(lexer.consume_token(), Fun);
         expect_token_type(lexer.consume_token(), Return);
+        expect_token_type(lexer.consume_token(), Var);
+        expect_token_type(lexer.consume_token(), Const);
         expect_token_type(lexer.consume_token(), Eof);
     }
 } // namespace

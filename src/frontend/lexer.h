@@ -5,8 +5,6 @@
 #include "source_location.h"
 #include "token.h"
 
-#include <string_view>
-
 namespace talos
 {
     struct LexerError {
