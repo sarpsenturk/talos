@@ -18,6 +18,8 @@ namespace talos
     class ExprStatement;
     class FunStatement;
     class ReturnStatement;
+    class VarStatement;
+    class ConstStatement;
     class ProgramNode;
 
     using ASTNodePtr = std::unique_ptr<ASTNode>;
@@ -38,6 +40,8 @@ namespace talos
         virtual void visit(const ExprStatement& stmt) = 0;
         virtual void visit(const FunStatement& stmt) = 0;
         virtual void visit(const ReturnStatement& stmt) = 0;
+        virtual void visit(const VarStatement& stmt) = 0;
+        virtual void visit(const ConstStatement& stmt) = 0;
         virtual void visit(const ProgramNode& program) = 0;
 
     protected:
@@ -169,6 +173,36 @@ namespace talos
 
     private:
         ExprPtr return_value_;
+    };
+
+    class VarStatement : public Statement
+    {
+    public:
+        VarStatement(Token identifier, ExprPtr value);
+
+        [[nodiscard]] auto identifier() const noexcept { return identifier_; }
+        [[nodiscard]] auto* value() const noexcept { return value_.get(); }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        Token identifier_;
+        ExprPtr value_;
+    };
+
+    class ConstStatement : public Statement
+    {
+    public:
+        ConstStatement(Token identifier, ExprPtr value);
+
+        [[nodiscard]] auto identifier() const noexcept { return identifier_; }
+        [[nodiscard]] auto* value() const noexcept { return value_.get(); }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        Token identifier_;
+        ExprPtr value_;
     };
 
     class ProgramNode : public ASTNode

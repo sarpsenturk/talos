@@ -41,6 +41,18 @@ namespace talos
     {
     }
 
+    VarStatement::VarStatement(Token identifier, ExprPtr value)
+        : identifier_(identifier)
+        , value_(std::move(value))
+    {
+    }
+
+    ConstStatement::ConstStatement(Token identifier, ExprPtr value)
+        : identifier_(identifier)
+        , value_(std::move(value))
+    {
+    }
+
     ProgramNode::ProgramNode(std::vector<StatementPtr> statements)
         : statements_(std::move(statements))
     {
