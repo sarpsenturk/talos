@@ -1,3 +1,5 @@
-fun my_func123()
+fun main()
 {
+    const my_constant = 12345;
+    var my_variable = 12 * 12;
 }

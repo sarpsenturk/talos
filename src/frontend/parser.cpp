@@ -31,6 +31,12 @@ namespace talos
         if (expect_and_consume(TokenType::Return)) {
             return return_statement();
         }
+        if (expect_and_consume(TokenType::Var)) {
+            return var_statement();
+        }
+        if (expect_and_consume(TokenType::Const)) {
+            return const_statement();
+        }
         return expr_statement();
     }
 
@@ -79,6 +85,52 @@ namespace talos
         }
 
         return std::make_unique<ReturnStatement>(std::move(*return_value));
+    }
+
+    StmtResult Parser::var_statement()
+    {
+        if (!expect_and_consume(TokenType::Identifier)) {
+            return syntax_error("Expected variable identifier after var");
+        }
+        auto identifier = current_token_;
+
+        if (!expect_and_consume(TokenType::Equal)) {
+            return syntax_error("Expected '=' after identifier");
+        }
+
+        auto value = expression();
+        if (!value) {
+            return unexpected(value.error());
+        }
+
+        if (!expect_and_consume(TokenType::Semicolon)) {
+            return syntax_error("Expected ';' after variable");
+        }
+
+        return std::make_unique<VarStatement>(identifier, std::move(*value));
+    }
+
+    StmtResult Parser::const_statement()
+    {
+        if (!expect_and_consume(TokenType::Identifier)) {
+            return syntax_error("Expected constant identifier after const");
+        }
+        auto identifier = current_token_;
+
+        if (!expect_and_consume(TokenType::Equal)) {
+            return syntax_error("Expected '=' after identifier");
+        }
+
+        auto value = expression();
+        if (!value) {
+            return unexpected(value.error());
+        }
+
+        if (!expect_and_consume(TokenType::Semicolon)) {
+            return syntax_error("Expected ';' after constant");
+        }
+
+        return std::make_unique<ConstStatement>(identifier, std::move(*value));
     }
 
     StmtResult Parser::expr_statement()
