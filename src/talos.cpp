@@ -36,6 +36,6 @@ namespace talos
         }
         std::stringstream sstream;
         sstream << source_file.rdbuf();
-        return VMSuccess{.output = sstream.str()};
+        return execute_string(sstream.str());
     }
 } // namespace talos

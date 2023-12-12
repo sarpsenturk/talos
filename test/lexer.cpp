@@ -24,7 +24,7 @@ namespace
 
     TEST(Lexer, Tokens)
     {
-        constexpr const char* string = "+-/*()";
+        constexpr const char* string = "+-/*();";
         auto lexer = talos::Lexer{string};
         using enum talos::TokenType;
         expect_token_type(lexer.consume_token(), Plus);
@@ -33,6 +33,8 @@ namespace
         expect_token_type(lexer.consume_token(), Star);
         expect_token_type(lexer.consume_token(), LeftParen);
         expect_token_type(lexer.consume_token(), RightParen);
+        expect_token_type(lexer.consume_token(), Semicolon);
+        expect_token_type(lexer.consume_token(), Eof);
     }
 
     TEST(Lexer, Location)
@@ -69,5 +71,15 @@ namespace
         const auto result = lexer.consume_token();
         expect_token_type(result, talos::TokenType::Integer);
         expect_token_string(result, "1234567890");
+    }
+
+    TEST(Lexer, Keywords)
+    {
+        constexpr const char* string = "fun return";
+        auto lexer = talos::Lexer{string};
+        using enum talos::TokenType;
+        expect_token_type(lexer.consume_token(), Fun);
+        expect_token_type(lexer.consume_token(), Return);
+        expect_token_type(lexer.consume_token(), Eof);
     }
 } // namespace

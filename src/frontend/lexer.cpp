@@ -46,6 +46,20 @@ namespace talos
                 }
                 return make_token(TokenType::Integer);
             };
+            auto make_keyword_or_identifier = [&]() {
+                while (std::isalpha(peek()) != 0) {
+                    consume_char();
+                }
+
+                auto string = current_string();
+                if (string == "fun") {
+                    return make_token(TokenType::Fun);
+                }
+                if (string == "return") {
+                    return make_token(TokenType::Return);
+                }
+                return make_token(TokenType::Identifier);
+            };
 
             const auto character = consume_char();
             switch (character) {
@@ -76,6 +90,9 @@ namespace talos
                 default:
                     if (std::isdigit(character) != 0) {
                         return make_integer();
+                    }
+                    if (std::isalpha(character) != 0) {
+                        return make_keyword_or_identifier();
                     }
                     break;
             }

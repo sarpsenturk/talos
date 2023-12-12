@@ -17,7 +17,12 @@ namespace talos
         LeftParen,
         RightParen,
         Integer,
-        Semicolon
+        Semicolon,
+
+        // Keywords
+        Fun,
+        Return,
+        Identifier
     };
 
     struct Token {
@@ -49,6 +54,12 @@ namespace talos
                 return "Integer";
             case TokenType::Semicolon:
                 return "Semicolon";
+            case TokenType::Fun:
+                return "Fun";
+            case TokenType::Return:
+                return "Return";
+            case TokenType::Identifier:
+                return "Identifier";
         }
     }
 }
