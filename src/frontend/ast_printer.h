@@ -19,7 +19,7 @@ namespace talos
         void visit(const FunStatement& stmt) override;
         void visit(const ReturnStatement& stmt) override;
         void visit(const VarStatement& stmt) override;
-        void visit(const ConstStatement& stmt) override;
+        void visit(const LetStatement& stmt) override;
         void visit(const ProgramNode& program) override;
 
     private:

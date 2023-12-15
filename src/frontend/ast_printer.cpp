@@ -51,7 +51,7 @@ namespace talos
 
     void ASTPrinter::visit(const IdentifierExpr& expr)
     {
-        print_indented(level_, "Identifier {}", expr.identifier().string);
+        print_indented(level_, "Identifier '{}'", expr.identifier().string);
     }
 
     void ASTPrinter::visit(const ExprStatement& stmt)
@@ -88,9 +88,9 @@ namespace talos
         --level_;
     }
 
-    void ASTPrinter::visit(const ConstStatement& stmt)
+    void ASTPrinter::visit(const LetStatement& stmt)
     {
-        print_indented(level_, "ConstStatement '{}'", stmt.identifier().string);
+        print_indented(level_, "LetStatement '{}'", stmt.identifier().string);
         ++level_;
         stmt.value()->accept(*this);
         --level_;

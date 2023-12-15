@@ -40,7 +40,7 @@ namespace talos
             std::make_pair("fun"sv, TokenType::Fun),
             std::make_pair("return"sv, TokenType::Return),
             std::make_pair("var"sv, TokenType::Var),
-            std::make_pair("const"sv, TokenType::Const),
+            std::make_pair("let"sv, TokenType::Let),
         };
     } // namespace
 

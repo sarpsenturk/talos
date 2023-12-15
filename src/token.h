@@ -27,7 +27,7 @@ namespace talos
         Return,
         Identifier,
         Var,
-        Const
+        Let
     };
 
     struct Token {
@@ -73,8 +73,8 @@ namespace talos
                 return "Identifier";
             case TokenType::Var:
                 return "Var";
-            case TokenType::Const:
-                return "Const";
+            case TokenType::Let:
+                return "Let";
         }
     }
 }

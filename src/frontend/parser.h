@@ -31,7 +31,7 @@ namespace talos
         StmtResult fun_statement();
         StmtResult return_statement();
         StmtResult var_statement();
-        StmtResult const_statement();
+        StmtResult let_statement();
         StmtResult expr_statement();
         ExprResult expression();
         ExprResult additive_expr();

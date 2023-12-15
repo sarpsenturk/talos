@@ -34,8 +34,8 @@ namespace talos
         if (expect_and_consume(TokenType::Var)) {
             return var_statement();
         }
-        if (expect_and_consume(TokenType::Const)) {
-            return const_statement();
+        if (expect_and_consume(TokenType::Let)) {
+            return let_statement();
         }
         return expr_statement();
     }
@@ -110,7 +110,7 @@ namespace talos
         return std::make_unique<VarStatement>(identifier, std::move(*value));
     }
 
-    StmtResult Parser::const_statement()
+    StmtResult Parser::let_statement()
     {
         if (!expect_and_consume(TokenType::Identifier)) {
             return syntax_error("Expected constant identifier after const");
@@ -130,7 +130,7 @@ namespace talos
             return syntax_error("Expected ';' after constant");
         }
 
-        return std::make_unique<ConstStatement>(identifier, std::move(*value));
+        return std::make_unique<LetStatement>(identifier, std::move(*value));
     }
 
     StmtResult Parser::expr_statement()

@@ -20,7 +20,7 @@ namespace talos
     class FunStatement;
     class ReturnStatement;
     class VarStatement;
-    class ConstStatement;
+    class LetStatement;
     class ProgramNode;
 
     using ASTNodePtr = std::unique_ptr<ASTNode>;
@@ -43,7 +43,7 @@ namespace talos
         virtual void visit(const FunStatement& stmt) = 0;
         virtual void visit(const ReturnStatement& stmt) = 0;
         virtual void visit(const VarStatement& stmt) = 0;
-        virtual void visit(const ConstStatement& stmt) = 0;
+        virtual void visit(const LetStatement& stmt) = 0;
         virtual void visit(const ProgramNode& program) = 0;
 
     protected:
@@ -205,10 +205,10 @@ namespace talos
         ExprPtr value_;
     };
 
-    class ConstStatement : public Statement
+    class LetStatement : public Statement
     {
     public:
-        ConstStatement(Token identifier, ExprPtr value);
+        LetStatement(Token identifier, ExprPtr value);
 
         [[nodiscard]] auto identifier() const noexcept { return identifier_; }
         [[nodiscard]] auto* value() const noexcept { return value_.get(); }

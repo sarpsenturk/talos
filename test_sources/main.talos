@@ -1,6 +1,6 @@
 fun main()
 {
-    const my_constant = 12345;
+    let my_constant = 12345;
     var my_variable = 12 * 12;
     return my_constant + my_variable;
 }

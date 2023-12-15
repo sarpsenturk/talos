@@ -52,7 +52,7 @@ namespace talos
     {
     }
 
-    ConstStatement::ConstStatement(Token identifier, ExprPtr value)
+    LetStatement::LetStatement(Token identifier, ExprPtr value)
         : identifier_(identifier)
         , value_(std::move(value))
     {
