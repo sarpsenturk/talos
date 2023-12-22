@@ -3,6 +3,7 @@
 #include "token.h"
 
 #include <memory>
+#include <optional>
 #include <span>
 #include <vector>
 
@@ -18,10 +19,9 @@ namespace talos
     class AssignmentExpr;
     class Statement;
     class ExprStatement;
-    class FunStatement;
     class ReturnStatement;
-    class VarStatement;
-    class LetStatement;
+    class VarDeclStatement;
+    class FunDeclStatement;
     class ProgramNode;
 
     using ASTNodePtr = std::unique_ptr<ASTNode>;
@@ -42,10 +42,9 @@ namespace talos
         virtual void visit(const IdentifierExpr& expr) = 0;
         virtual void visit(const AssignmentExpr& expr) = 0;
         virtual void visit(const ExprStatement& stmt) = 0;
-        virtual void visit(const FunStatement& stmt) = 0;
         virtual void visit(const ReturnStatement& stmt) = 0;
-        virtual void visit(const VarStatement& stmt) = 0;
-        virtual void visit(const LetStatement& stmt) = 0;
+        virtual void visit(const VarDeclStatement& stmt) = 0;
+        virtual void visit(const FunDeclStatement& stmt) = 0;
         virtual void visit(const ProgramNode& program) = 0;
 
     protected:
@@ -179,21 +178,6 @@ namespace talos
         ExprPtr expr_;
     };
 
-    class FunStatement : public Statement
-    {
-    public:
-        FunStatement(Token identifier, StatementList statements);
-
-        [[nodiscard]] auto identifier() const noexcept { return identifier_; }
-        [[nodiscard]] auto statements() const noexcept { return std::span{statements_}; }
-
-        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
-
-    private:
-        Token identifier_;
-        StatementList statements_;
-    };
-
     class ReturnStatement : public Statement
     {
     public:
@@ -207,34 +191,38 @@ namespace talos
         ExprPtr return_value_;
     };
 
-    class VarStatement : public Statement
+    class VarDeclStatement : public Statement
     {
     public:
-        VarStatement(Token identifier, ExprPtr value);
+        VarDeclStatement(Token decl_type, Token identifier, std::optional<Token> type_spec, ExprPtr initializer);
 
+        [[nodiscard]] auto decl_type() const noexcept { return decl_type_; }
         [[nodiscard]] auto identifier() const noexcept { return identifier_; }
-        [[nodiscard]] auto* value() const noexcept { return value_.get(); }
+        [[nodiscard]] auto type_specifier() const noexcept { return type_specifier_; }
+        [[nodiscard]] auto* initializer() const noexcept { return initializer_.get(); }
 
         void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
+        Token decl_type_;
         Token identifier_;
-        ExprPtr value_;
+        std::optional<Token> type_specifier_;
+        ExprPtr initializer_;
     };
 
-    class LetStatement : public Statement
+    class FunDeclStatement : public Statement
     {
     public:
-        LetStatement(Token identifier, ExprPtr value);
+        FunDeclStatement(Token identifier, StatementList statements);
 
         [[nodiscard]] auto identifier() const noexcept { return identifier_; }
-        [[nodiscard]] auto* value() const noexcept { return value_.get(); }
+        [[nodiscard]] auto statements() const noexcept { return std::span{statements_}; }
 
         void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
         Token identifier_;
-        ExprPtr value_;
+        StatementList statements_;
     };
 
     class ProgramNode : public ASTNode

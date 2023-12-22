@@ -27,11 +27,11 @@ namespace talos
         ParserResult parse();
 
     private:
+        StmtResult declaration();
+        StmtResult var_decl();
+        StmtResult fun_decl();
         StmtResult statement();
-        StmtResult fun_statement();
         StmtResult return_statement();
-        StmtResult var_statement();
-        StmtResult let_statement();
         StmtResult expr_statement();
         ExprResult expression();
         ExprResult assignment_expr();

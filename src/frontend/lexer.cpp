@@ -122,6 +122,8 @@ namespace talos
                     return make_token(TokenType::RightBrace);
                 case '=':
                     return make_token(TokenType::Equal);
+                case ':':
+                    return make_token(TokenType::Colon);
                 case ' ':
                     continue;
                 case '\t':

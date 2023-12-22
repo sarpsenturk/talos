@@ -2,5 +2,6 @@ fun main()
 {
     var first = 0;
     var second = 0;
-    return first = second = 42 + 52;
+    let constant = 42;
+    return first = second = constant;
 }

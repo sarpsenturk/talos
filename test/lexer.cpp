@@ -24,7 +24,7 @@ namespace
 
     TEST(Lexer, Tokens)
     {
-        constexpr const char* string = "+-/*();{}=";
+        constexpr const char* string = "+-/*();{}=:";
         auto lexer = talos::Lexer{string};
         using enum talos::TokenType;
         expect_token_type(lexer.consume_token(), Plus);
@@ -37,6 +37,7 @@ namespace
         expect_token_type(lexer.consume_token(), LeftBrace);
         expect_token_type(lexer.consume_token(), RightBrace);
         expect_token_type(lexer.consume_token(), Equal);
+        expect_token_type(lexer.consume_token(), Colon);
         expect_token_type(lexer.consume_token(), Eof);
     }
 

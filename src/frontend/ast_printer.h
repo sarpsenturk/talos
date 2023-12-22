@@ -17,13 +17,15 @@ namespace talos
         void visit(const IdentifierExpr& expr) override;
         void visit(const AssignmentExpr& expr) override;
         void visit(const ExprStatement& stmt) override;
-        void visit(const FunStatement& stmt) override;
         void visit(const ReturnStatement& stmt) override;
-        void visit(const VarStatement& stmt) override;
-        void visit(const LetStatement& stmt) override;
-        void visit(const ProgramNode& program) override;
+
+    public:
+        void visit(const VarDeclStatement& stmt) override;
+        void visit(const FunDeclStatement& stmt) override;
 
     private:
+        void visit(const ProgramNode& program) override;
+
         int level_ = 0;
     };
 } // namespace talos

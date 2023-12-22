@@ -14,7 +14,7 @@ namespace talos
         consume_token();
         std::vector<StatementPtr> statements;
         while (!is_eof()) {
-            auto stmt = statement();
+            auto stmt = declaration();
             if (!stmt) {
                 return unexpected(stmt.error());
             }
@@ -23,24 +23,47 @@ namespace talos
         return ProgramNode{std::move(statements)};
     }
 
-    StmtResult Parser::statement()
+    StmtResult Parser::declaration()
     {
+        if (expect_and_consume({{TokenType::Var, TokenType::Let}})) {
+            return var_decl();
+        }
         if (expect_and_consume(TokenType::Fun)) {
-            return fun_statement();
+            return fun_decl();
         }
-        if (expect_and_consume(TokenType::Return)) {
-            return return_statement();
-        }
-        if (expect_and_consume(TokenType::Var)) {
-            return var_statement();
-        }
-        if (expect_and_consume(TokenType::Let)) {
-            return let_statement();
-        }
-        return expr_statement();
+        return statement();
     }
 
-    StmtResult Parser::fun_statement()
+    StmtResult Parser::var_decl()
+    {
+        // 'var' or 'let'
+        auto decl_type = current_token_;
+
+        if (!expect_and_consume(TokenType::Identifier)) {
+            return syntax_error("Expected variable identifier");
+        }
+        auto identifier = current_token_;
+
+        // TODO: parse type specifier
+        std::optional<Token> type_spec;
+
+        if (!expect_and_consume(TokenType::Equal)) {
+            return syntax_error("Expected '=' after identifier");
+        }
+
+        auto value = expression();
+        if (!value) {
+            return unexpected(value.error());
+        }
+
+        if (!expect_and_consume(TokenType::Semicolon)) {
+            return syntax_error("Expected ';' after variable");
+        }
+
+        return std::make_unique<VarDeclStatement>(decl_type, identifier, type_spec, std::move(*value));
+    }
+
+    StmtResult Parser::fun_decl()
     {
         if (!expect_and_consume(TokenType::Identifier)) {
             return syntax_error("Expected function identifier after fun");
@@ -64,13 +87,21 @@ namespace talos
             if (is_eof()) {
                 return syntax_error("Unexpected EOF. Expected '}' to end function block");
             }
-            auto stmt = statement();
+            auto stmt = declaration();
             if (!stmt) {
                 return stmt;
             }
             statements.push_back(std::move(*stmt));
         }
-        return std::make_unique<FunStatement>(identifier, std::move(statements));
+        return std::make_unique<FunDeclStatement>(identifier, std::move(statements));
+    }
+
+    StmtResult Parser::statement()
+    {
+        if (expect_and_consume(TokenType::Return)) {
+            return return_statement();
+        }
+        return expr_statement();
     }
 
     StmtResult Parser::return_statement()
@@ -85,52 +116,6 @@ namespace talos
         }
 
         return std::make_unique<ReturnStatement>(std::move(*return_value));
-    }
-
-    StmtResult Parser::var_statement()
-    {
-        if (!expect_and_consume(TokenType::Identifier)) {
-            return syntax_error("Expected variable identifier after var");
-        }
-        auto identifier = current_token_;
-
-        if (!expect_and_consume(TokenType::Equal)) {
-            return syntax_error("Expected '=' after identifier");
-        }
-
-        auto value = expression();
-        if (!value) {
-            return unexpected(value.error());
-        }
-
-        if (!expect_and_consume(TokenType::Semicolon)) {
-            return syntax_error("Expected ';' after variable");
-        }
-
-        return std::make_unique<VarStatement>(identifier, std::move(*value));
-    }
-
-    StmtResult Parser::let_statement()
-    {
-        if (!expect_and_consume(TokenType::Identifier)) {
-            return syntax_error("Expected constant identifier after const");
-        }
-        auto identifier = current_token_;
-
-        if (!expect_and_consume(TokenType::Equal)) {
-            return syntax_error("Expected '=' after identifier");
-        }
-
-        auto value = expression();
-        if (!value) {
-            return unexpected(value.error());
-        }
-
-        if (!expect_and_consume(TokenType::Semicolon)) {
-            return syntax_error("Expected ';' after constant");
-        }
-
-        return std::make_unique<LetStatement>(identifier, std::move(*value));
     }
 
     StmtResult Parser::expr_statement()

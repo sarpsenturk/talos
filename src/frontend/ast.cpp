@@ -42,26 +42,22 @@ namespace talos
     {
     }
 
-    FunStatement::FunStatement(Token identifier, StatementList statements)
-        : identifier_(identifier)
-        , statements_(std::move(statements))
-    {
-    }
-
     ReturnStatement::ReturnStatement(ExprPtr return_value)
         : return_value_(std::move(return_value))
     {
     }
 
-    VarStatement::VarStatement(Token identifier, ExprPtr value)
-        : identifier_(identifier)
-        , value_(std::move(value))
+    VarDeclStatement::VarDeclStatement(Token decl_type, Token identifier, std::optional<Token> type_spec, ExprPtr initializer)
+        : decl_type_(decl_type)
+        , identifier_(identifier)
+        , type_specifier_(type_spec)
+        , initializer_(std::move(initializer))
     {
     }
 
-    LetStatement::LetStatement(Token identifier, ExprPtr value)
+    FunDeclStatement::FunDeclStatement(Token identifier, StatementList statements)
         : identifier_(identifier)
-        , value_(std::move(value))
+        , statements_(std::move(statements))
     {
     }
 
