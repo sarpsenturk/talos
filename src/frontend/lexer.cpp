@@ -41,6 +41,10 @@ namespace talos
             std::make_pair("return"sv, TokenType::Return),
             std::make_pair("var"sv, TokenType::Var),
             std::make_pair("let"sv, TokenType::Let),
+            std::make_pair("i8"sv, TokenType::Int8),
+            std::make_pair("i16"sv, TokenType::Int16),
+            std::make_pair("i32"sv, TokenType::Int32),
+            std::make_pair("i64"sv, TokenType::Int64),
         };
     } // namespace
 

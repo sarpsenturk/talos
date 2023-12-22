@@ -27,7 +27,13 @@ namespace talos
         Return,
         Identifier,
         Var,
-        Let
+        Let,
+
+        // Builtin type keywords
+        Int8,
+        Int16,
+        Int32,
+        Int64
     };
 
     struct Token {
@@ -75,6 +81,14 @@ namespace talos
                 return "Var";
             case TokenType::Let:
                 return "Let";
+            case TokenType::Int8:
+                return "Int8";
+            case TokenType::Int16:
+                return "Int16";
+            case TokenType::Int32:
+                return "Int32";
+            case TokenType::Int64:
+                return "Int64";
         }
     }
 }
