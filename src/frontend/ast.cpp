@@ -30,6 +30,13 @@ namespace talos
     {
     }
 
+    AssignmentExpr::AssignmentExpr(ExprPtr lhs, ExprPtr rhs)
+        : lhs_(std::move(lhs))
+        , rhs_(std::move(rhs))
+    // ippek<3
+    {
+    }
+
     ExprStatement::ExprStatement(ExprPtr expr)
         : expr_(std::move(expr))
     {

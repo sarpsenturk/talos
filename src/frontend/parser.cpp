@@ -147,7 +147,23 @@ namespace talos
 
     ExprResult Parser::expression()
     {
-        return additive_expr();
+        return assignment_expr();
+    }
+
+    ExprResult Parser::assignment_expr()
+    {
+        auto expr = additive_expr();
+        if (!expr) {
+            return expr;
+        }
+        while (expect_and_consume(TokenType::Equal)) {
+            auto rhs = assignment_expr();
+            if (!rhs) {
+                return rhs;
+            }
+            expr = std::make_unique<AssignmentExpr>(std::move(*expr), std::move(*rhs));
+        }
+        return expr;
     }
 
     ExprResult Parser::additive_expr()

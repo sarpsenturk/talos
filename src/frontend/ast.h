@@ -15,6 +15,7 @@ namespace talos
     class UnaryExpr;
     class IntLiteralExpr;
     class IdentifierExpr;
+    class AssignmentExpr;
     class Statement;
     class ExprStatement;
     class FunStatement;
@@ -39,6 +40,7 @@ namespace talos
         virtual void visit(const ParenExpr& expr) = 0;
         virtual void visit(const IntLiteralExpr& expr) = 0;
         virtual void visit(const IdentifierExpr& expr) = 0;
+        virtual void visit(const AssignmentExpr& expr) = 0;
         virtual void visit(const ExprStatement& stmt) = 0;
         virtual void visit(const FunStatement& stmt) = 0;
         virtual void visit(const ReturnStatement& stmt) = 0;
@@ -143,6 +145,21 @@ namespace talos
 
     private:
         Token identifier_;
+    };
+
+    class AssignmentExpr : public Expr
+    {
+    public:
+        AssignmentExpr(ExprPtr lhs, ExprPtr rhs);
+
+        [[nodiscard]] auto* lhs() const noexcept { return lhs_.get(); }
+        [[nodiscard]] auto* rhs() const noexcept { return rhs_.get(); }
+
+        void accept(ASTVisitor& visitor) const override { return visitor.visit(*this); }
+
+    private:
+        ExprPtr lhs_;
+        ExprPtr rhs_;
     };
 
     class Statement : public ASTNode

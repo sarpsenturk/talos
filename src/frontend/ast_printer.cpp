@@ -54,6 +54,16 @@ namespace talos
         print_indented(level_, "Identifier '{}'", expr.identifier().string);
     }
 
+    void ASTPrinter::visit(const AssignmentExpr& expr)
+    {
+        print_indented(level_, "Assignment");
+        ++level_;
+        expr.lhs()->accept(*this);
+        print_indented(level_, "operator=");
+        expr.rhs()->accept(*this);
+        --level_;
+    }
+
     void ASTPrinter::visit(const ExprStatement& stmt)
     {
         print_indented(level_, "ExprStatement");

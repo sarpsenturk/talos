@@ -1,6 +1,6 @@
 fun main()
 {
-    let my_constant = 12345;
-    var my_variable = 12 * 12;
-    return my_constant + my_variable;
+    var first = 0;
+    var second = 0;
+    return first = second = 42 + 52;
 }

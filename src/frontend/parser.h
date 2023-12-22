@@ -34,6 +34,7 @@ namespace talos
         StmtResult let_statement();
         StmtResult expr_statement();
         ExprResult expression();
+        ExprResult assignment_expr();
         ExprResult additive_expr();
         ExprResult factor_expr();
         ExprResult unary_expr();
