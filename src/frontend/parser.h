@@ -19,6 +19,14 @@ namespace talos
     using ExprResult = expected<ExprPtr, ParserError>;
     using StmtResult = expected<StatementPtr, ParserError>;
 
+    struct UnexpectedToken {
+        std::string msg;
+        SourceLocation location;
+        ReturnCode code;
+    };
+
+    using ExpectTokenResult = expected<Token, UnexpectedToken>;
+
     class Parser
     {
     public:
@@ -41,9 +49,12 @@ namespace talos
         ExprResult literal_expr();
 
         [[nodiscard]] bool is_eof() const noexcept;
-        void consume_token();
-        bool expect_and_consume(std::span<const TokenType> expected);
-        bool expect_and_consume(TokenType expected);
+
+        LexerReturn consume_token();
+
+        ExpectTokenResult expect_and_consume(std::span<const TokenType> expected);
+        ExpectTokenResult expect_and_consume(TokenType expected);
+
         unexpected<ParserError> syntax_error(std::string message) const;
 
         Lexer* lexer_;

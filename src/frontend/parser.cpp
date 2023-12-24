@@ -2,8 +2,18 @@
 
 #include <algorithm>
 
+#include <fmt/ranges.h>
+
 namespace talos
 {
+    namespace
+    {
+        constexpr UnexpectedToken to_token_error(const LexerError& error)
+        {
+            return {error.message, error.location, error.code};
+        }
+    } // namespace
+
     Parser::Parser(Lexer* lexer)
         : lexer_(lexer)
     {
@@ -39,10 +49,10 @@ namespace talos
         // 'var' or 'let'
         auto decl_type = current_token_;
 
-        if (!expect_and_consume(TokenType::Identifier)) {
+        auto identifier = expect_and_consume(TokenType::Identifier);
+        if (!identifier) {
             return syntax_error("Expected variable identifier");
         }
-        auto identifier = current_token_;
 
         // TODO: parse type specifier
         std::optional<Token> type_spec;
@@ -60,15 +70,15 @@ namespace talos
             return syntax_error("Expected ';' after variable");
         }
 
-        return std::make_unique<VarDeclStatement>(decl_type, identifier, type_spec, std::move(*value));
+        return std::make_unique<VarDeclStatement>(decl_type, *identifier, type_spec, std::move(*value));
     }
 
     StmtResult Parser::fun_decl()
     {
-        if (!expect_and_consume(TokenType::Identifier)) {
+        auto identifier = expect_and_consume(TokenType::Identifier);
+        if (!identifier) {
             return syntax_error("Expected function identifier after fun");
         }
-        auto identifier = current_token_;
 
         if (!expect_and_consume(TokenType::LeftParen)) {
             return syntax_error("Expected '(' after function name");
@@ -93,7 +103,7 @@ namespace talos
             }
             statements.push_back(std::move(*stmt));
         }
-        return std::make_unique<FunDeclStatement>(identifier, std::move(statements));
+        return std::make_unique<FunDeclStatement>(*identifier, std::move(statements));
     }
 
     StmtResult Parser::statement()
@@ -157,13 +167,12 @@ namespace talos
         if (!expr) {
             return expr;
         }
-        while (expect_and_consume({{TokenType::Plus, TokenType::Minus}})) {
-            auto op = current_token_;
+        while (auto binary_op = expect_and_consume({{TokenType::Plus, TokenType::Minus}})) {
             auto rhs = factor_expr();
             if (!rhs) {
                 return rhs;
             }
-            expr = std::make_unique<BinaryExpr>(std::move(*expr), op, std::move(*rhs));
+            expr = std::make_unique<BinaryExpr>(std::move(*expr), *binary_op, std::move(*rhs));
         }
         return expr;
     }
@@ -174,24 +183,22 @@ namespace talos
         if (!expr) {
             return expr;
         }
-        while (expect_and_consume({{TokenType::Star, TokenType::Slash}})) {
-            auto op = current_token_;
+        while (auto binary_op = expect_and_consume({{TokenType::Star, TokenType::Slash}})) {
             auto rhs = unary_expr();
             if (!rhs) {
                 return rhs;
             }
-            expr = std::make_unique<BinaryExpr>(std::move(*expr), op, std::move(*rhs));
+            expr = std::make_unique<BinaryExpr>(std::move(*expr), *binary_op, std::move(*rhs));
         }
         return expr;
     }
 
     ExprResult Parser::unary_expr()
     {
-        if (expect_and_consume({{TokenType::Minus}})) {
-            auto unary_op = current_token_;
+        if (auto unary_op = expect_and_consume({{TokenType::Minus}})) {
             auto expr = unary_expr();
             if (expr) {
-                return std::make_unique<UnaryExpr>(unary_op, std::move(*expr));
+                return std::make_unique<UnaryExpr>(*unary_op, std::move(*expr));
             }
             return expr;
         }
@@ -200,11 +207,11 @@ namespace talos
 
     ExprResult Parser::literal_expr()
     {
-        if (expect_and_consume(TokenType::Integer)) {
-            return std::make_unique<IntLiteralExpr>(current_token_);
+        if (auto integer = expect_and_consume(TokenType::Integer)) {
+            return std::make_unique<IntLiteralExpr>(*integer);
         }
-        if (expect_and_consume(TokenType::Identifier)) {
-            return std::make_unique<IdentifierExpr>(current_token_);
+        if (auto identifier = expect_and_consume(TokenType::Identifier)) {
+            return std::make_unique<IdentifierExpr>(*identifier);
         }
         if (expect_and_consume(TokenType::LeftParen)) {
             auto expr = expression();
@@ -221,24 +228,34 @@ namespace talos
         return next_token_.type == TokenType::Eof;
     }
 
-    void Parser::consume_token()
+    LexerReturn Parser::consume_token()
     {
-        // TODO: We don't check for lex errors here
-        //  We should probably do that.
         current_token_ = next_token_;
-        next_token_ = lexer_->consume_token().value();
+        auto next = lexer_->consume_token();
+        if (!next) {
+            return next;
+        }
+        next_token_ = *next;
+        return current_token_;
     }
 
-    bool Parser::expect_and_consume(std::span<const TokenType> expected)
+    ExpectTokenResult Parser::expect_and_consume(std::span<const TokenType> expected)
     {
         if (const auto iter = std::ranges::find(expected, next_token_.type); iter != expected.end()) {
-            consume_token();
-            return true;
+            auto token = consume_token();
+            if (!token) {
+                return unexpected(to_token_error(token.error()));
+            }
+            return *token;
         }
-        return false;
+        return unexpected(UnexpectedToken{
+            .msg = fmt::format("Expected token {}, got {}", expected, next_token_.type),
+            .location = next_token_.location,
+            .code = ReturnCode::UnexpectedToken,
+        });
     }
 
-    bool Parser::expect_and_consume(TokenType expected)
+    ExpectTokenResult Parser::expect_and_consume(TokenType expected)
     {
         return expect_and_consume({{expected}});
     }
