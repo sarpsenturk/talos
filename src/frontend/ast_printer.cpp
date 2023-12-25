@@ -61,6 +61,16 @@ namespace talos
         print_indented(level_, "IntLiteral {}", expr.int_token().string);
     }
 
+    void ASTPrinter::visit(const StringLiteralExpr& expr)
+    {
+        print_indented(level_, "StringLiteral {}", expr.string_literal().string);
+    }
+
+    void ASTPrinter::visit(const CharLiteralExpr& expr)
+    {
+        print_indented(level_, "CharacterLiteral {}", expr.char_literal().string);
+    }
+
     void ASTPrinter::visit(const IdentifierExpr& expr)
     {
         print_indented(level_, "Identifier '{}'", expr.identifier().string);

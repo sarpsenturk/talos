@@ -15,6 +15,8 @@ namespace talos
     class ParenExpr;
     class UnaryExpr;
     class IntLiteralExpr;
+    class StringLiteralExpr;
+    class CharLiteralExpr;
     class IdentifierExpr;
     class AssignmentExpr;
     class Statement;
@@ -39,6 +41,8 @@ namespace talos
         virtual void visit(const UnaryExpr& expr) = 0;
         virtual void visit(const ParenExpr& expr) = 0;
         virtual void visit(const IntLiteralExpr& expr) = 0;
+        virtual void visit(const StringLiteralExpr& expr) = 0;
+        virtual void visit(const CharLiteralExpr& expr) = 0;
         virtual void visit(const IdentifierExpr& expr) = 0;
         virtual void visit(const AssignmentExpr& expr) = 0;
         virtual void visit(const ExprStatement& stmt) = 0;
@@ -131,6 +135,32 @@ namespace talos
 
     private:
         Token int_token_;
+    };
+
+    class StringLiteralExpr : public Expr
+    {
+    public:
+        explicit StringLiteralExpr(Token string_literal);
+
+        [[nodiscard]] auto string_literal() const noexcept { return string_literal_; }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        Token string_literal_;
+    };
+
+    class CharLiteralExpr : public Expr
+    {
+    public:
+        explicit CharLiteralExpr(Token char_literal);
+
+        [[nodiscard]] auto char_literal() const noexcept { return char_literal_; }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        Token char_literal_;
     };
 
     class IdentifierExpr : public Expr

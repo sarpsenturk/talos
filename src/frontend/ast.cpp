@@ -25,6 +25,16 @@ namespace talos
     {
     }
 
+    StringLiteralExpr::StringLiteralExpr(Token string_literal)
+        : string_literal_(string_literal)
+    {
+    }
+
+    CharLiteralExpr::CharLiteralExpr(Token char_literal)
+        : char_literal_(char_literal)
+    {
+    }
+
     IdentifierExpr::IdentifierExpr(Token identifier)
         : identifier_(identifier)
     {
