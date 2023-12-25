@@ -17,7 +17,6 @@ namespace talos
         Star,
         LeftParen,
         RightParen,
-        Integer,
         Semicolon,
         LeftBrace,
         RightBrace,
@@ -35,7 +34,12 @@ namespace talos
         Int8,
         Int16,
         Int32,
-        Int64
+        Int64,
+
+        // Literal tokens
+        Integer,
+        String,
+        Character
     };
 
     inline constexpr auto type_specifier_tokens = std::array{
@@ -79,8 +83,6 @@ namespace talos
                 return "Left Paren";
             case TokenType::RightParen:
                 return "Right Paren";
-            case TokenType::Integer:
-                return "Integer";
             case TokenType::Semicolon:
                 return "Semicolon";
             case TokenType::LeftBrace:
@@ -109,6 +111,12 @@ namespace talos
                 return "Int32";
             case TokenType::Int64:
                 return "Int64";
+            case TokenType::Integer:
+                return "Integer Literal";
+            case TokenType::String:
+                return "String Literal";
+            case TokenType::Character:
+                return "Character Literal";
         }
     }
 } // namespace talos

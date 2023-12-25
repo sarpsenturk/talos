@@ -59,6 +59,8 @@ namespace talos
         for (;;) {
             const auto position = current_position_;
             const auto location = current_location_;
+
+            // Helper lambdas
             auto current_string = [&]() {
                 const auto start = std::distance(source_.begin(), position);
                 const auto end = std::distance(position, current_position_);
@@ -87,6 +89,33 @@ namespace talos
                 }
                 return make_token(TokenType::Integer);
             };
+            auto make_string = [&]() -> LexerReturn {
+                while (peek() != '"') {
+                    if (is_eof()) {
+                        return make_error(ReturnCode::UnexpectedEof, "Expected terminating \"");
+                    }
+                    consume_char();
+                }
+                // Consume closing quote
+                consume_char();
+                return make_token(TokenType::String);
+            };
+            auto make_char = [&]() -> LexerReturn {
+                if (peek() == '\'') {
+                    return make_error(ReturnCode::EmptyCharLiteral, "Can't have empty character literal");
+                }
+                if (is_eof()) {
+                    return make_error(ReturnCode::UnexpectedEof, "Expected character");
+                }
+                consume_char();
+
+                if (is_eof()) {
+                    return make_error(ReturnCode::UnexpectedEof, "Expected terminating '");
+                }
+                // Consume closing quote
+                consume_char();
+                return make_token(TokenType::Character);
+            };
             auto make_keyword_or_identifier = [&]() {
                 while (is_identifier_char(peek())) {
                     consume_char();
@@ -97,6 +126,7 @@ namespace talos
                 }
                 return make_token(TokenType::Identifier);
             };
+            //
 
             const auto character = consume_char();
             switch (character) {
@@ -132,6 +162,10 @@ namespace talos
                 case '\n':
                     advance_line();
                     continue;
+                case '"':
+                    return make_string();
+                case '\'':
+                    return make_char();
                 default:
                     if (isdigit(character)) {
                         return make_integer();

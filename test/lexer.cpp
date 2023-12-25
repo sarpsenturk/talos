@@ -22,6 +22,12 @@ namespace
         EXPECT_EQ(result->string, string);
     }
 
+    void expect_lexer_error(const talos::LexerReturn& result, talos::ReturnCode code)
+    {
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error().code, code);
+    }
+
     TEST(Lexer, Tokens)
     {
         constexpr const char* string = "+-/*();{}=:";
@@ -75,6 +81,67 @@ namespace
         const auto result = lexer.consume_token();
         expect_token_type(result, talos::TokenType::Integer);
         expect_token_string(result, "1234567890");
+    }
+
+    TEST(Lexer, StringLiterals)
+    {
+        // Basic string literal
+        {
+            constexpr auto string = "\"string\"";
+            auto lexer = talos::Lexer{string};
+            const auto result = lexer.consume_token();
+            expect_token_type(result, talos::TokenType::String);
+            expect_token_string(result, "\"string\"");
+        }
+
+        // Empty string literal
+        {
+            constexpr auto string = "\"\"";
+            auto lexer = talos::Lexer{string};
+            const auto result = lexer.consume_token();
+            expect_token_type(result, talos::TokenType::String);
+            expect_token_string(result, "\"\"");
+        }
+
+        // Missing terminator
+        {
+            constexpr auto string = "\"string";
+            auto lexer = talos::Lexer{string};
+            expect_lexer_error(lexer.consume_token(), talos::ReturnCode::UnexpectedEof);
+        }
+    }
+
+    TEST(Lexer, CharLiterals)
+    {
+        // Basic character literal
+        {
+            constexpr auto string = "'c'";
+            auto lexer = talos::Lexer{string};
+            const auto result = lexer.consume_token();
+            expect_token_type(result, talos::TokenType::Character);
+            expect_token_string(result, "'c'");
+        }
+
+        // Empty character literal
+        {
+            constexpr auto string = "''";
+            auto lexer = talos::Lexer{string};
+            expect_lexer_error(lexer.consume_token(), talos::ReturnCode::EmptyCharLiteral);
+        }
+
+        // Missing character
+        {
+            constexpr auto string = "'";
+            auto lexer = talos::Lexer{string};
+            expect_lexer_error(lexer.consume_token(), talos::ReturnCode::UnexpectedEof);
+        }
+
+        // Missing terminator
+        {
+            constexpr auto string = "'c";
+            auto lexer = talos::Lexer{string};
+            expect_lexer_error(lexer.consume_token(), talos::ReturnCode::UnexpectedEof);
+        }
     }
 
     TEST(Lexer, Keywords)

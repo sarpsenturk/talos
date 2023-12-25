@@ -6,7 +6,10 @@ namespace talos {
         FileNotFound,
         InvalidChar,
         SyntaxError,
-        UnexpectedToken
+        UnexpectedToken,
+        UnexpectedEof,
+        UnexpectedChar,
+        EmptyCharLiteral
     };
 
     [[nodiscard]] constexpr const char* return_code_desc(ReturnCode code)
@@ -22,6 +25,12 @@ namespace talos {
                 return "Syntax Error";
             case ReturnCode::UnexpectedToken:
                 return "Unexpected token";
+            case ReturnCode::UnexpectedEof:
+                return "Unexpected end of file";
+            case ReturnCode::UnexpectedChar:
+                return "Unexpected character";
+            case ReturnCode::EmptyCharLiteral:
+                return "Empty character literal";
         }
         return "Invalid return code";
     }
