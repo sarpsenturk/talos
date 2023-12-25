@@ -36,7 +36,7 @@ namespace talos
         }
 
         using namespace std::string_view_literals;
-        static const auto keywords = std::unordered_map{
+        const auto keywords = std::unordered_map{
             std::make_pair("fun"sv, TokenType::Fun),
             std::make_pair("return"sv, TokenType::Return),
             std::make_pair("var"sv, TokenType::Var),
@@ -45,6 +45,8 @@ namespace talos
             std::make_pair("i16"sv, TokenType::Int16),
             std::make_pair("i32"sv, TokenType::Int32),
             std::make_pair("i64"sv, TokenType::Int64),
+            std::make_pair("f32"sv, TokenType::Float32),
+            std::make_pair("f64"sv, TokenType::Float64),
         };
     } // namespace
 
@@ -83,11 +85,21 @@ namespace talos
             auto invalid_char = [&](char character) {
                 return make_error(ReturnCode::InvalidChar, fmt::format("Invalid character {}", character));
             };
-            auto make_integer = [&]() {
+            auto make_number = [&]() -> LexerReturn {
+                auto token_type = TokenType::IntLiteral;
                 while (isdigit(peek())) {
                     consume_char();
                 }
-                return make_token(TokenType::Integer);
+
+                // Check for decimal exponent
+                if (peek() == '.') {
+                    token_type = TokenType::FloatLiteral;
+                    consume_char();
+                    while (isdigit(peek())) {
+                        consume_char();
+                    }
+                }
+                return make_token(token_type);
             };
             auto make_string = [&]() -> LexerReturn {
                 while (peek() != '"') {
@@ -98,7 +110,7 @@ namespace talos
                 }
                 // Consume closing quote
                 consume_char();
-                return make_token(TokenType::String);
+                return make_token(TokenType::StringLiteral);
             };
             auto make_char = [&]() -> LexerReturn {
                 if (peek() == '\'') {
@@ -114,7 +126,7 @@ namespace talos
                 }
                 // Consume closing quote
                 consume_char();
-                return make_token(TokenType::Character);
+                return make_token(TokenType::CharLiteral);
             };
             auto make_keyword_or_identifier = [&]() {
                 while (is_identifier_char(peek())) {
@@ -168,7 +180,7 @@ namespace talos
                     return make_char();
                 default:
                     if (isdigit(character)) {
-                        return make_integer();
+                        return make_number();
                     }
                     if (is_identifier_start(character)) {
                         return make_keyword_or_identifier();

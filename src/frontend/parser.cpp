@@ -240,13 +240,13 @@ namespace talos
 
     ExprResult Parser::literal_expr()
     {
-        if (auto integer = expect_and_consume(TokenType::Integer)) {
+        if (auto integer = expect_and_consume(TokenType::IntLiteral)) {
             return std::make_unique<IntLiteralExpr>(*integer);
         }
-        if (auto string = expect_and_consume(TokenType::String)) {
+        if (auto string = expect_and_consume(TokenType::StringLiteral)) {
             return std::make_unique<StringLiteralExpr>(*string);
         }
-        if (auto character = expect_and_consume(TokenType::Character)) {
+        if (auto character = expect_and_consume(TokenType::CharLiteral)) {
             return std::make_unique<CharLiteralExpr>(*character);
         }
         if (auto identifier = expect_and_consume(TokenType::Identifier)) {

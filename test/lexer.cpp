@@ -74,12 +74,12 @@ namespace
         expect_token_location(result, {.line = 1, .column = 1});
     }
 
-    TEST(Lexer, Integer)
+    TEST(Lexer, IntLiteral)
     {
         constexpr const char* string = "1234567890";
         auto lexer = talos::Lexer{string};
         const auto result = lexer.consume_token();
-        expect_token_type(result, talos::TokenType::Integer);
+        expect_token_type(result, talos::TokenType::IntLiteral);
         expect_token_string(result, "1234567890");
     }
 
@@ -90,7 +90,7 @@ namespace
             constexpr auto string = "\"string\"";
             auto lexer = talos::Lexer{string};
             const auto result = lexer.consume_token();
-            expect_token_type(result, talos::TokenType::String);
+            expect_token_type(result, talos::TokenType::StringLiteral);
             expect_token_string(result, "\"string\"");
         }
 
@@ -99,7 +99,7 @@ namespace
             constexpr auto string = "\"\"";
             auto lexer = talos::Lexer{string};
             const auto result = lexer.consume_token();
-            expect_token_type(result, talos::TokenType::String);
+            expect_token_type(result, talos::TokenType::StringLiteral);
             expect_token_string(result, "\"\"");
         }
 
@@ -118,7 +118,7 @@ namespace
             constexpr auto string = "'c'";
             auto lexer = talos::Lexer{string};
             const auto result = lexer.consume_token();
-            expect_token_type(result, talos::TokenType::Character);
+            expect_token_type(result, talos::TokenType::CharLiteral);
             expect_token_string(result, "'c'");
         }
 
@@ -144,6 +144,27 @@ namespace
         }
     }
 
+    TEST(Lexer, FloatLiterals)
+    {
+        // Basic float literal
+        {
+            constexpr auto string = "1.0";
+            auto lexer = talos::Lexer{string};
+            const auto result = lexer.consume_token();
+            expect_token_type(result, talos::TokenType::FloatLiteral);
+            expect_token_string(result, "1.0");
+        }
+
+        // Optional decimal exponent
+        {
+            constexpr auto string = "1.";
+            auto lexer = talos::Lexer{string};
+            const auto result = lexer.consume_token();
+            expect_token_type(result, talos::TokenType::FloatLiteral);
+            expect_token_string(result, "1.");
+        }
+    }
+
     TEST(Lexer, Keywords)
     {
         constexpr const char* string = "fun return var let";
@@ -158,12 +179,14 @@ namespace
 
     TEST(Lexer, BuiltinTypes)
     {
-        constexpr const char* string = "i8 i16 i32 i64";
+        constexpr const char* string = "i8 i16 i32 i64 f32 f64";
         auto lexer = talos::Lexer{string};
         using enum talos::TokenType;
         expect_token_type(lexer.consume_token(), Int8);
         expect_token_type(lexer.consume_token(), Int16);
         expect_token_type(lexer.consume_token(), Int32);
         expect_token_type(lexer.consume_token(), Int64);
+        expect_token_type(lexer.consume_token(), Float32);
+        expect_token_type(lexer.consume_token(), Float64);
     }
 } // namespace
