@@ -2,6 +2,7 @@
 
 #include "source_location.h"
 
+#include <array>
 #include <string>
 #include <string_view>
 
@@ -37,10 +38,26 @@ namespace talos
         Int64
     };
 
+    inline constexpr auto type_specifier_tokens = std::array{
+        TokenType::Int8,
+        TokenType::Int16,
+        TokenType::Int32,
+        TokenType::Int64,
+
+        TokenType::Identifier, // Checked after parsing
+    };
+
     struct Token {
         TokenType type = TokenType::Invalid;
         SourceLocation location;
         std::string_view string;
+    };
+
+    template<typename F>
+    concept TokenPredicate = requires(F callable, const Token& token) {
+        {
+            callable(token)
+        } -> std::convertible_to<bool>;
     };
 
     constexpr auto format_as(TokenType token_type)
@@ -94,4 +111,4 @@ namespace talos
                 return "Int64";
         }
     }
-}
+} // namespace talos

@@ -12,6 +12,18 @@ namespace talos
         {
             return {error.message, error.location, error.code};
         }
+
+        constexpr ParserError to_parser_error(const LexerError& error)
+        {
+            return {.code = error.code, .message = error.message, .location = error.location};
+        }
+
+        constexpr bool is_type_specifier(const Token& token)
+        {
+            return std::ranges::any_of(type_specifier_tokens, [expected = token.type](auto type) {
+                return type == expected;
+            });
+        }
     } // namespace
 
     Parser::Parser(Lexer* lexer)
@@ -54,8 +66,17 @@ namespace talos
             return syntax_error("Expected variable identifier");
         }
 
-        // TODO: parse type specifier
         std::optional<Token> type_spec;
+        if (expect_and_consume(TokenType::Colon)) {
+            auto token = consume_if(is_type_specifier);
+            if (!token) {
+                return unexpected(to_parser_error(token.error()));
+            }
+            if (!token->has_value()) {
+                return syntax_error("Expected type specifier after ':'");
+            }
+            type_spec = *token;
+        }
 
         if (!expect_and_consume(TokenType::Equal)) {
             return syntax_error("Expected '=' after identifier");
@@ -88,6 +109,18 @@ namespace talos
             return syntax_error("Expected ')' after parameter list");
         }
 
+        std::optional<Token> type_spec;
+        if (expect_and_consume(TokenType::Colon)) {
+            auto token = consume_if(is_type_specifier);
+            if (!token) {
+                return unexpected(to_parser_error(token.error()));
+            }
+            if (!token->has_value()) {
+                return syntax_error("Expected type specifier after ':'");
+            }
+            type_spec = *token;
+        }
+
         StatementList statements;
         if (!expect_and_consume(TokenType::LeftBrace)) {
             return syntax_error("Expected '{' to begin function block");
@@ -103,7 +136,7 @@ namespace talos
             }
             statements.push_back(std::move(*stmt));
         }
-        return std::make_unique<FunDeclStatement>(*identifier, std::move(statements));
+        return std::make_unique<FunDeclStatement>(*identifier, type_spec, std::move(statements));
     }
 
     StmtResult Parser::statement()

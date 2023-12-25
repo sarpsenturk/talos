@@ -1,7 +1,8 @@
-fun main()
+fun main() : i32
 {
     var first = 0;
-    var second = 0;
+    var second : i16 = 0;
+    var test : MyType = 0;
     let constant = 42;
     return first = second = constant;
 }

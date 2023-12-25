@@ -6,6 +6,18 @@
 
 namespace talos
 {
+    std::string_view type_specifier_string(const std::optional<Token>& type_spec)
+    {
+        if (!type_spec) {
+            return "Inferred";
+        }
+        const auto& token = *type_spec;
+        if (token.type == TokenType::Identifier) {
+            return token.string;
+        }
+        return format_as(token.type);
+    }
+
     template<typename... Args>
     void print_indented(int indent, std::string_view format_str, Args&&... args)
     {
@@ -74,7 +86,10 @@ namespace talos
 
     void ASTPrinter::visit(const VarDeclStatement& stmt)
     {
-        print_indented(level_, "VarDecl '{} {}'", stmt.decl_type().string, stmt.identifier().string);
+        print_indented(level_, "VarDecl '{} {} : ({})'",
+                       stmt.decl_type().string,
+                       stmt.identifier().string,
+                       type_specifier_string(stmt.type_specifier()));
         ++level_;
         stmt.initializer()->accept(*this);
         --level_;
@@ -82,7 +97,9 @@ namespace talos
 
     void ASTPrinter::visit(const FunDeclStatement& stmt)
     {
-        print_indented(level_, "FunDecl '{}()'", stmt.identifier().string);
+        print_indented(level_, "FunDecl '{}() : ({})'",
+                       stmt.identifier().string,
+                       type_specifier_string(stmt.type_spec()));
         ++level_;
         for (const auto& statement : stmt.statements()) {
             statement->accept(*this);

@@ -24,8 +24,9 @@ namespace talos
         SourceLocation location;
         ReturnCode code;
     };
-
     using ExpectTokenResult = expected<Token, UnexpectedToken>;
+
+    using ConditionalToken = expected<std::optional<Token>, LexerError>;
 
     class Parser
     {
@@ -54,6 +55,19 @@ namespace talos
 
         ExpectTokenResult expect_and_consume(std::span<const TokenType> expected);
         ExpectTokenResult expect_and_consume(TokenType expected);
+
+        template<TokenPredicate F>
+        ConditionalToken consume_if(F callable)
+        {
+            if (callable(next_token_)) {
+                auto token = consume_token();
+                if (!token) {
+                    return unexpected(token.error());
+                }
+                return *token;
+            }
+            return std::nullopt;
+        }
 
         unexpected<ParserError> syntax_error(std::string message) const;
 

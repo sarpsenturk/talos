@@ -55,8 +55,9 @@ namespace talos
     {
     }
 
-    FunDeclStatement::FunDeclStatement(Token identifier, StatementList statements)
+    FunDeclStatement::FunDeclStatement(Token identifier, std::optional<Token> type_spec, StatementList statements)
         : identifier_(identifier)
+        , type_spec_(type_spec)
         , statements_(std::move(statements))
     {
     }

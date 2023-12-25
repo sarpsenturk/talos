@@ -213,15 +213,17 @@ namespace talos
     class FunDeclStatement : public Statement
     {
     public:
-        FunDeclStatement(Token identifier, StatementList statements);
+        FunDeclStatement(Token identifier, std::optional<Token> type_spec, StatementList statements);
 
         [[nodiscard]] auto identifier() const noexcept { return identifier_; }
+        [[nodiscard]] auto type_spec() const noexcept { return type_spec_; }
         [[nodiscard]] auto statements() const noexcept { return std::span{statements_}; }
 
         void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
         Token identifier_;
+        std::optional<Token> type_spec_;
         StatementList statements_;
     };
 
