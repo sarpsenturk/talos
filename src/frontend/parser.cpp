@@ -249,6 +249,9 @@ namespace talos
         if (auto character = expect_and_consume(TokenType::CharLiteral)) {
             return std::make_unique<CharLiteralExpr>(*character);
         }
+        if (auto floating = expect_and_consume(TokenType::FloatLiteral)) {
+            return std::make_unique<FloatingLiteralExpr>(*floating);
+        }
         if (auto identifier = expect_and_consume(TokenType::Identifier)) {
             return std::make_unique<IdentifierExpr>(*identifier);
         }

@@ -35,6 +35,11 @@ namespace talos
     {
     }
 
+    FloatingLiteralExpr::FloatingLiteralExpr(Token float_literal)
+        : float_literal_(float_literal)
+    {
+    }
+
     IdentifierExpr::IdentifierExpr(Token identifier)
         : identifier_(identifier)
     {
