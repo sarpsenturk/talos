@@ -1,5 +1,7 @@
 #include "lexer.h"
 
+#include "exceptions.h"
+
 #include <fmt/format.h>
 
 #include <cctype>
@@ -56,7 +58,7 @@ namespace talos
     {
     }
 
-    LexerReturn Lexer::consume_token()
+    Token Lexer::consume_token()
     {
         for (;;) {
             const auto position = current_position_;
@@ -75,17 +77,7 @@ namespace talos
                     .string = current_string(),
                 };
             };
-            auto make_error = [&](ReturnCode code, std::string message) {
-                return unexpected(LexerError{
-                    code,
-                    location,
-                    std::move(message),
-                });
-            };
-            auto invalid_char = [&](char character) {
-                return make_error(ReturnCode::InvalidChar, fmt::format("Invalid character {}", character));
-            };
-            auto make_number = [&]() -> LexerReturn {
+            auto make_number = [&]() {
                 auto token_type = TokenType::IntLiteral;
                 while (isdigit(peek())) {
                     consume_char();
@@ -101,10 +93,10 @@ namespace talos
                 }
                 return make_token(token_type);
             };
-            auto make_string = [&]() -> LexerReturn {
+            auto make_string = [&]() {
                 while (peek() != '"') {
                     if (is_eof()) {
-                        return make_error(ReturnCode::UnexpectedEof, "Expected terminating \"");
+                        throw unexpected_eof(location, "Expected terminating \"");
                     }
                     consume_char();
                 }
@@ -112,17 +104,17 @@ namespace talos
                 consume_char();
                 return make_token(TokenType::StringLiteral);
             };
-            auto make_char = [&]() -> LexerReturn {
+            auto make_char = [&]() {
                 if (peek() == '\'') {
-                    return make_error(ReturnCode::EmptyCharLiteral, "Can't have empty character literal");
+                    throw TalosException(ReturnCode::EmptyCharLiteral, location, "Empty character literals aren't allowed");
                 }
                 if (is_eof()) {
-                    return make_error(ReturnCode::UnexpectedEof, "Expected character");
+                    throw unexpected_eof(location);
                 }
                 consume_char();
 
                 if (is_eof()) {
-                    return make_error(ReturnCode::UnexpectedEof, "Expected terminating '");
+                    throw unexpected_eof(location, "Expected terminating \'");
                 }
                 // Consume closing quote
                 consume_char();
@@ -187,7 +179,7 @@ namespace talos
                     }
                     break;
             }
-            return invalid_char(character);
+            throw TalosException(ReturnCode::InvalidChar, location);
         }
     }
 

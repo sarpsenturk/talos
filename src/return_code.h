@@ -1,6 +1,7 @@
 #pragma once
 
-namespace talos {
+namespace talos
+{
     enum class ReturnCode {
         Ok = 0,
         FileNotFound,
@@ -12,6 +13,28 @@ namespace talos {
         EmptyCharLiteral
     };
 
+    [[nodiscard]] constexpr const char* return_code_str(ReturnCode code)
+    {
+        switch (code) {
+            case ReturnCode::Ok:
+                return "Ok";
+            case ReturnCode::FileNotFound:
+                return "File not found";
+            case ReturnCode::InvalidChar:
+                return "Invalid character";
+            case ReturnCode::SyntaxError:
+                return "Syntax error";
+            case ReturnCode::UnexpectedToken:
+                return "Unexpected token";
+            case ReturnCode::UnexpectedEof:
+                return "Unexpected EOF";
+            case ReturnCode::UnexpectedChar:
+                return "Unexpected character";
+            case ReturnCode::EmptyCharLiteral:
+                return "Empty character literal";
+        }
+        return "Unknown";
+    }
     [[nodiscard]] constexpr const char* return_code_desc(ReturnCode code)
     {
         switch (code) {
@@ -34,4 +57,4 @@ namespace talos {
         }
         return "Invalid return code";
     }
-}
+} // namespace talos

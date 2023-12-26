@@ -1,5 +1,6 @@
 #include "talos.h"
 
+#include "exceptions.h"
 #include "frontend/ast_printer.h"
 #include "frontend/lexer.h"
 #include "frontend/parser.h"
@@ -13,19 +14,22 @@ namespace talos
 {
     VMReturn TalosVM::execute_string(std::string_view string)
     {
-        auto lexer = Lexer{string};
-        auto parser = Parser{&lexer};
-        auto result = parser.parse();
-        if (!result) {
-            auto& parser_error = result.error();
+        try {
+            auto lexer = Lexer{string};
+            auto parser = Parser{&lexer};
+            auto result = parser.parse();
+            auto ast_printer = ASTPrinter{};
+            ast_printer.print(result);
+            return VMSuccess{.output = ""};
+        } catch (const TalosException& exception) {
             return unexpected(VMError{
-                .code = parser_error.code,
-                .description = fmt::format("Syntax Error ({}): {}", parser_error.location, parser_error.message),
+                .code = exception.code(),
+                .description = fmt::format("{} ({}): {}",
+                                           return_code_str(exception.code()),
+                                           exception.location(),
+                                           exception.what()),
             });
         }
-        auto ast_printer = ASTPrinter{};
-        ast_printer.print(*result);
-        return VMSuccess{.output = ""};
     }
 
     VMReturn TalosVM::execute_file(std::string_view filename)
