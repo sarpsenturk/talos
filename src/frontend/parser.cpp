@@ -192,6 +192,9 @@ namespace talos
         if (auto floating = expect_and_consume(TokenType::FloatLiteral)) {
             return std::make_unique<FloatingLiteralExpr>(*floating);
         }
+        if (auto boolean = expect_and_consume({{TokenType::TrueLiteral, TokenType::FalseLiteral}})) {
+            return std::make_unique<BoolLiteralExpr>(*boolean);
+        }
         if (auto identifier = expect_and_consume(TokenType::Identifier)) {
             return std::make_unique<IdentifierExpr>(*identifier);
         }

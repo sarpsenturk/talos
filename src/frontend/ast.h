@@ -18,6 +18,7 @@ namespace talos
     class StringLiteralExpr;
     class CharLiteralExpr;
     class FloatingLiteralExpr;
+    class BoolLiteralExpr;
     class IdentifierExpr;
     class AssignmentExpr;
     class Statement;
@@ -45,6 +46,7 @@ namespace talos
         virtual void visit(const StringLiteralExpr& expr) = 0;
         virtual void visit(const CharLiteralExpr& expr) = 0;
         virtual void visit(const FloatingLiteralExpr& expr) = 0;
+        virtual void visit(const BoolLiteralExpr& expr) = 0;
         virtual void visit(const IdentifierExpr& expr) = 0;
         virtual void visit(const AssignmentExpr& expr) = 0;
         virtual void visit(const ExprStatement& stmt) = 0;
@@ -176,6 +178,19 @@ namespace talos
 
     private:
         Token float_literal_;
+    };
+
+    class BoolLiteralExpr : public Expr
+    {
+    public:
+        explicit BoolLiteralExpr(Token bool_literal);
+
+        [[nodiscard]] auto bool_literal() const noexcept { return bool_literal_; }
+
+        void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
+
+    private:
+        Token bool_literal_;
     };
 
     class IdentifierExpr : public Expr

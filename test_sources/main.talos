@@ -10,6 +10,12 @@ fun floats()
     var my_double : f64 = 3.14159265359;
 }
 
+fun boolean()
+{
+    let my_true : bool = true;
+    let my_false = false;
+}
+
 fun main() : i32
 {
     var first = 0;
