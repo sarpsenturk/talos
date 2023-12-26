@@ -20,8 +20,9 @@ namespace talos
     {
     }
 
-    IntLiteralExpr::IntLiteralExpr(Token int_token)
-        : int_token_(int_token)
+    IntLiteralExpr::IntLiteralExpr(Token int_literal, std::optional<Token> suffix)
+        : int_literal_(int_literal)
+        , suffix_(suffix)
     {
     }
 
@@ -35,8 +36,9 @@ namespace talos
     {
     }
 
-    FloatingLiteralExpr::FloatingLiteralExpr(Token float_literal)
+    FloatingLiteralExpr::FloatingLiteralExpr(Token float_literal, std::optional<Token> suffix)
         : float_literal_(float_literal)
+        , suffix_(suffix)
     {
     }
 

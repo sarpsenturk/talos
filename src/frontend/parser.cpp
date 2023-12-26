@@ -10,11 +10,16 @@ namespace talos
 {
     namespace
     {
-        constexpr bool is_type_specifier(const Token& token)
+        constexpr bool is_type_keyword(const Token& token)
         {
-            return std::ranges::any_of(type_specifier_tokens, [expected = token.type](auto type) {
+            return std::ranges::any_of(type_keywords, [expected = token.type](auto type) {
                 return type == expected;
             });
+        }
+
+        constexpr bool is_type_specifier(const Token& token)
+        {
+            return is_type_keyword(token) || token.type == TokenType::Identifier;
         }
     } // namespace
 
@@ -181,7 +186,7 @@ namespace talos
     std::unique_ptr<Expr> Parser::literal_expr()
     {
         if (auto integer = expect_and_consume(TokenType::IntLiteral)) {
-            return std::make_unique<IntLiteralExpr>(*integer);
+            return std::make_unique<IntLiteralExpr>(*integer, consume_if(is_type_keyword));
         }
         if (auto string = expect_and_consume(TokenType::StringLiteral)) {
             return std::make_unique<StringLiteralExpr>(*string);
@@ -190,7 +195,7 @@ namespace talos
             return std::make_unique<CharLiteralExpr>(*character);
         }
         if (auto floating = expect_and_consume(TokenType::FloatLiteral)) {
-            return std::make_unique<FloatingLiteralExpr>(*floating);
+            return std::make_unique<FloatingLiteralExpr>(*floating, consume_if(is_type_keyword));
         }
         if (auto boolean = expect_and_consume({{TokenType::TrueLiteral, TokenType::FalseLiteral}})) {
             return std::make_unique<BoolLiteralExpr>(*boolean);

@@ -58,7 +58,9 @@ namespace talos
 
     void ASTPrinter::visit(const IntLiteralExpr& expr)
     {
-        print_indented(level_, "IntLiteral {}", expr.int_token().string);
+        print_indented(level_, "IntLiteral {} (suffix: {})",
+                       expr.int_literal().string,
+                       expr.suffix().has_value() ? expr.suffix()->string : "None");
     }
 
     void ASTPrinter::visit(const StringLiteralExpr& expr)
@@ -73,7 +75,9 @@ namespace talos
 
     void ASTPrinter::visit(const FloatingLiteralExpr& expr)
     {
-        print_indented(level_, "FloatingLiteral {}", expr.float_literal().string);
+        print_indented(level_, "FloatingLiteral {} (suffix: {})",
+                       expr.float_literal().string,
+                       expr.suffix().has_value() ? expr.suffix()->string : "None");
     }
 
     void ASTPrinter::visit(const BoolLiteralExpr& expr)

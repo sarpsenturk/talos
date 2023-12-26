@@ -16,6 +16,16 @@ fun boolean()
     let my_false = false;
 }
 
+fun suffix()
+{
+    let a = 1i8;
+    let b = 2i16;
+    let c = 3i32;
+    let d = 4i64;
+    let e = 5.0f32;
+    let f = 6.0f64;
+}
+
 fun main() : i32
 {
     var first = 0;

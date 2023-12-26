@@ -131,14 +131,16 @@ namespace talos
     class IntLiteralExpr : public Expr
     {
     public:
-        explicit IntLiteralExpr(Token int_token);
+        IntLiteralExpr(Token int_literal, std::optional<Token> suffix);
 
-        [[nodiscard]] Token int_token() const noexcept { return int_token_; }
+        [[nodiscard]] auto int_literal() const noexcept { return int_literal_; }
+        [[nodiscard]] auto suffix() const noexcept { return suffix_; }
 
         void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
-        Token int_token_;
+        Token int_literal_;
+        std::optional<Token> suffix_;
     };
 
     class StringLiteralExpr : public Expr
@@ -170,14 +172,16 @@ namespace talos
     class FloatingLiteralExpr : public Expr
     {
     public:
-        explicit FloatingLiteralExpr(Token float_literal);
+        FloatingLiteralExpr(Token float_literal, std::optional<Token> suffix);
 
         [[nodiscard]] auto float_literal() const noexcept { return float_literal_; }
+        [[nodiscard]] auto suffix() const noexcept { return suffix_; }
 
         void accept(ASTVisitor& visitor) const override { visitor.visit(*this); }
 
     private:
         Token float_literal_;
+        std::optional<Token> suffix_;
     };
 
     class BoolLiteralExpr : public Expr

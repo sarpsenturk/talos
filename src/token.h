@@ -48,7 +48,7 @@ namespace talos
         FalseLiteral,
     };
 
-    inline constexpr auto type_specifier_tokens = std::array{
+    inline constexpr auto type_keywords = std::array{
         TokenType::Int8,
         TokenType::Int16,
         TokenType::Int32,
@@ -56,8 +56,6 @@ namespace talos
         TokenType::Float32,
         TokenType::Float64,
         TokenType::Bool,
-
-        TokenType::Identifier, // Checked after parsing
     };
 
     struct Token {
