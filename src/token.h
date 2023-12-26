@@ -37,12 +37,15 @@ namespace talos
         Int64,
         Float32,
         Float64,
+        Bool,
 
         // Literal tokens
         IntLiteral,
         FloatLiteral,
         StringLiteral,
-        CharLiteral
+        CharLiteral,
+        TrueLiteral,
+        FalseLiteral,
     };
 
     inline constexpr auto type_specifier_tokens = std::array{
@@ -52,6 +55,7 @@ namespace talos
         TokenType::Int64,
         TokenType::Float32,
         TokenType::Float64,
+        TokenType::Bool,
 
         TokenType::Identifier, // Checked after parsing
     };
@@ -128,6 +132,12 @@ namespace talos
                 return "StringLiteral Literal";
             case TokenType::CharLiteral:
                 return "CharLiteral Literal";
+            case TokenType::TrueLiteral:
+                return "True";
+            case TokenType::FalseLiteral:
+                return "False";
+            case TokenType::Bool:
+                return "Bool";
         }
     }
 } // namespace talos

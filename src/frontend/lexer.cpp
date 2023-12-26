@@ -49,6 +49,9 @@ namespace talos
             std::make_pair("i64"sv, TokenType::Int64),
             std::make_pair("f32"sv, TokenType::Float32),
             std::make_pair("f64"sv, TokenType::Float64),
+            std::make_pair("true"sv, TokenType::TrueLiteral),
+            std::make_pair("false"sv, TokenType::FalseLiteral),
+            std::make_pair("bool"sv, TokenType::Bool),
         };
     } // namespace
 
